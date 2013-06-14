@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" width="132" height="66" xmlns:joinTable="mapping.joinTable.*">
+	<mx:Script>
+    <![CDATA[
+    	import mx.collections.ArrayCollection;
+		import mx.controls.Alert;
+		import mx.utils.ArrayUtil;
+		import mx.rpc.events.ResultEvent;
+    	import mapping.TableEditor;
+		public var tableEditor:TableEditor;
+		
+		private var _tableNode:XML;
+		[Bindable]
+		public function set tableNode(node:XML):void {
+			_tableNode = node;
+			var tables:XMLList = this.parentDocument.tables;
+			tableIDs = tables.@id;
+			var tableRefID:int = node.@id;
+			var tableID:String = node.text();
+			tableCB.selectedItem = tableID;
+			tableEditor = this.parentDocument.parentDocument.parentDocument;
+			columnCB.tableUri = tables.(@id.toString()==tableID).uri[0].toString();
+			columnCB.column = constraint.column.(@father==tableRefID.toString()).toString();
+		}
+		public function get tableNode():XML {
+			return _tableNode;
+		}
+		[Bindable]public var constraint:XML;
+		[Bindable]private var tableIDs:XMLList;
+		private function changeTable():void{			
+			var tables:XMLList = this.parentDocument.tables;
+			var tableID:String = tableCB.selectedItem.toString();			
+			columnCB.tableUri = tables.(@id.toString()==tableID).uri[0].toString();
+		}
+    ]]>
+    </mx:Script>
+	<mx:VBox>
+		<mx:ComboBox id="tableCB" dataProvider="{tableIDs}" change="changeTable()" width="130" height="28" />
+		<joinTable:TableColumn id="columnCB"/>
+	</mx:VBox>
+</mx:VBox>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project-modules id="moduleCoreId" project-version="1.5.0">
+    <wb-module deploy-name="OntoTool">
+        <wb-resource deploy-path="/" source-path="/WebRoot"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/src"/>
+        <wb-resource deploy-path="/" source-path="/bin-debug"/>
+        <wb-resource deploy-path="/" source-path="/src_flex"/>
+        <property name="java-output-path" value="WebRoot/WEB-INF/classes"/>
+        <property name="context-root" value="OntoTool"/>
+    </wb-module>
+</project-modules>

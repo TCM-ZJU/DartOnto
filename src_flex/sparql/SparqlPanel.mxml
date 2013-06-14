@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:sparql="sparql.*" width="100%" height="100%" 
+	label="Sparql执行器">	
+	<mx:Script>
+	<![CDATA[
+		import mx.charts.series.ColumnSet;
+		import mx.controls.DataGrid;
+		import dart.MyListEvent;
+		import mx.collections.XMLListCollection;
+		import mx.events.ListEvent;
+		import mx.controls.Alert;
+		import mx.rpc.events.ResultEvent;
+		import mx.managers.PopUpManager;
+		import mx.events.CloseEvent;
+		import mx.controls.dataGridClasses.DataGridColumn;
+        
+        [Bindable]
+        private var feed:XML;
+   		private function executeServiceResultHandler(event:ResultEvent):void {
+   			feed = event.result as XML;
+   			var message:XML = feed.elements("message")[0];
+   			if(message != null){
+   				Alert.show(message,"error");
+   				return;
+   			}
+   			var header:XML = feed.elements("header")[0];
+   			var count:int = header.attribute("length")[0];
+   			dg.columns = new Array;
+   			for(var i:int=1; i<=count; i++){
+   				var column:DataGridColumn = new DataGridColumn();
+				column.headerText = header.elements("c"+i)[0];
+				column.dataField = column.headerText;
+				dg.columns = dg.columns.concat(column);
+   			}
+        }
+        
+        private function execution():void{
+        	if(viewStack.selectedChild==construct)
+        		sparqlText.text=construct.getSparql(); 
+        	executeService.send();
+        }
+        [Bindable]
+        private var queryString:String = 
+		"PREFIX tcm: <http://cintcm.ac.cn/onto#> \n"+ 
+		"PREFIX skos: <http://www.w3.org/2004/02/skos/core#> \n"+ 
+		"SELECT distinct ?concept \n" +
+		"WHERE {	?s tcm:use ?f.\n" +
+		"       	?s skos:prefLabel ?sc. \n"+
+		"       	?f skos:prefLabel ?concept.\n"+
+		"		FILTER( ?sc='痰气郁结证').} \n";
+    ]]>
+    </mx:Script>
+    <sparql:SparqlClassChooser id="chooser" width="0" sendXML="construct.getDetail(event.xml)" />
+	<mx:VDividedBox width="100%" height="100%">
+		<mx:Panel title="Sparql语句:" width="100%" height="50%">
+			<mx:ViewStack id="viewStack" width="100%" height="100%">
+				<mx:Canvas id="write" width="100%" height="100%">
+					<mx:TextArea id="sparqlText" width="100%" height="100%"/>
+				</mx:Canvas>
+				<sparql:SparqlConstructor id="construct" width="100%" height="50%"/>
+        	</mx:ViewStack>			
+			<mx:ControlBar >
+				<mx:Button label="示例" click="sparqlText.text=queryString;"/>
+				<mx:Button label="手写" click="chooser.width=  0; viewStack.selectedChild=write; sparqlText.text=construct.getSparql();"/>
+				<mx:Button label="构造" click="chooser.width=300; viewStack.selectedChild=construct;"/>
+				<mx:Button label="执行" click="execution()"/>
+			</mx:ControlBar>
+		</mx:Panel>
+	    <mx:Panel id="resultPanel" title="执行结果" width="100%" height="50%">
+	    	<!--mx:TextArea id="resultText" text="{feed.toString()}" width="100%" height="100%"/-->
+	    	<mx:DataGrid id="dg" width="100%" height="100%" dataProvider ="{feed.elements('result')}"/>
+	    </mx:Panel> 
+	</mx:VDividedBox>
+	<mx:HTTPService id="executeService" url="./sparql" resultFormat="e4x" result="executeServiceResultHandler(event)" showBusyCursor="true">
+		<mx:request xmlns="">
+			<sparql>{sparqlText.text}</sparql>
+		</mx:request>
+	</mx:HTTPService>
+</mx:HBox>

@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Panel xmlns:mx="http://www.adobe.com/2006/mxml" height="100%" width="300" title="类型浏览器">
+	<mx:Metadata>
+		[Event(name="sendXML", type="dart.MyListEvent")]
+	</mx:Metadata>
+	<mx:Script>
+	<![CDATA[
+		import mx.controls.Text;
+		import dart.MyListEvent;
+		import mx.collections.XMLListCollection;
+		import mx.events.ListEvent;
+		import mx.controls.Alert;
+		import mx.managers.PopUpManager;
+		import mx.events.DragEvent;
+		import mx.managers.DragManager;
+		import mx.core.DragSource;
+		import mx.events.CloseEvent;
+		import mx.rpc.events.ResultEvent;
+		import mx.utils.ObjectUtil;
+		import mx.collections.XMLListCollection;
+        
+		[Bindable]
+		private var _classData:XMLList;		        
+       	[Bindable]
+        public function get classData():XMLList{return _classData;}        
+        public function set classData(c:XMLList):void{_classData = c;}
+        
+        [Embed(source="../assets/ontology/class.png")] public var classIcon:Class;
+   		private function iconFun(item:Object):*{return classIcon;}
+   		
+   		private function doubleClick(evt:ListEvent):void {
+   			getDetail(classTree.selectedItem as XML);
+        }
+        private function getDetail(node:XML):void {
+        	var e:MyListEvent = new MyListEvent(MyListEvent.SEND_XML);
+            e.xml = node;
+            dispatchEvent(e);            
+			classTree.selectedItem = node;
+        }
+        /***************add class*******************/
+        [Bindable]
+        private var dialog:NameDialog = new NameDialog();
+        private var addParent:XML;
+        private var action:String;
+        private function addClass():void {
+        	if(classTree.selectedIndex < 0)
+        		Alert.show("请选择一个父节点","提示");
+        	else{
+        		dialog = NameDialog(PopUpManager.createPopUp( this, NameDialog , true));
+				PopUpManager.centerPopUp(dialog);
+				dialog.addEventListener("ok_click",insertNode);
+        	}        	
+        }
+		private function insertNode(event:Event):void{
+			PopUpManager.removePopUp(dialog);
+        	addParent = classTree.selectedItem as XML;
+        	if(addParent == null)
+        		addParent = _classData[0] as XML;
+        	action = 'add';
+        	modelRO.addClass(addParent.attribute("uri").toString(), dialog.Name.text, dialog.Label.text);
+		}
+        
+        /***************delete class*******************/
+        private function deleteClass():void {
+        	var select:XML = classTree.selectedItem as XML;
+        	if(select == null){
+        		Alert.show("请选择一个节点","提示");
+        		return;
+        	}        	
+        	if(select.children().length() > 0){
+        		Alert.show("不能删除非叶节点","提示");
+        		return;
+        	}
+        	Alert.show("确定删除类\""+select.attribute("label")+"\"?", "删除类", 3, this, deleteAlertClickHandler);
+        }        
+        private function deleteAlertClickHandler(event:CloseEvent):void {
+           	if (event.detail==Alert.YES){
+           		var select:XML = classTree.selectedItem as XML;           		
+           		var parent:XML = select.parent() as XML;
+	        	action = 'delete';
+	        	modelRO.deleteClass(parent.attribute("uri").toString(), select.attribute("uri").toString());
+           	}
+        }        
+        /***************move class*******************/
+        [Bindable]        
+        private var hoverTarget:XML;
+        private var moveEvent:DragEvent;
+        public function onTreeDragDrop(event:DragEvent):void{
+        	moveEvent = event;
+			var index:int = classTree.calculateDropIndex(event);
+			var items:Array = new Array();
+			//we are supporting items from lists and trees				
+			if(event.dragSource.hasFormat("treeItems"))
+				items = items.concat(event.dragSource.dataForFormat("treeItems") as Array);
+			if(event.dragSource.hasFormat("items"))
+				items = items.concat(event.dragSource.dataForFormat("items") as Array);
+			//by default we add elements to the top level, but we could 
+			//calculate the position in the hierarchical structure using the datadescriptor
+			/*if(index > (tree.dataProvider as ICollectionView).length)
+				index = (tree.dataProvider as ICollectionView).length;*/
+			var parentItem:Object;
+			var aboveItem:Object = classTree.indexToItemRenderer(index-1).data;
+			if(classTree.dataDescriptor.isBranch(aboveItem) && classTree.isItemOpen(aboveItem))
+				parentItem = aboveItem;
+			else
+				parentItem = classTree.getParentItem(aboveItem);
+			if(parentItem == null){
+				DragManager.showFeedback(DragManager.NONE);
+				event.preventDefault();	
+			}			
+			for each(var item:Object in items){
+				if(event.ctrlKey){
+					action = 'copy';
+					modelRO.moveClass(	(item as XML).attribute("uri").toString(), null, 
+										(parentItem as XML).attribute("uri").toString(), true);
+				} else {
+					action = 'move';
+					modelRO.moveClass(	(item as XML).attribute("uri").toString(), 
+										(item as XML).attribute("parentUri").toString(), 
+										(parentItem as XML).attribute("uri").toString(), false);
+				}
+				//(tree.dataProvider as ArrayCollection).addItemAt(ObjectUtil.copy(item), index);
+			}
+		}
+		private function onDragComplete( event:DragEvent ) : void {
+            classTree.selectedIndex = -1;
+        }  
+		/***************save class*******************/
+        private function saveClass():void {
+        	action = 'save';
+        	modelRO.save();
+        } 
+		/******************handler************************/
+        private function modelROServiceResultHandler(event:ResultEvent):void {
+        	if(action == 'add'){
+            	var resultString:String = event.result as String;
+            	if(resultString == "duplicate")
+            		Alert.show("重复的LocalName","错误");
+            	else{
+            		var result:XML = XML(resultString);
+		        	addParent.appendChild(result);
+					if(classTree.selectedIndex >= 0)
+						classTree.expandItem(classTree.selectedItem, true);
+					getDetail(result);
+            	}            	
+        	} else if(action == 'delete') {
+        		var select:XML = classTree.selectedItem as XML;
+	            var bresult:String = event.result.toString();
+	            if(bresult == "true"){
+	            	var parent:XML = select.parent();
+	            	var children:XMLList = XMLList(parent).children();
+	                for(var i:Number=0; i < children.length(); i++) { 
+	                    if( children[i].@label == select.@label ) {
+	                        delete children[i];
+	                    }
+	                }
+	                getDetail(parent);
+            	} else {
+	            	Alert.show("删除失败请重试","错误");
+	        		return;
+	        	}
+        	} else if(action == 'move' || action == 'copy'){
+        		var sresult:String = event.result as String;
+	            if(sresult == "false"){
+	            	moveEvent.preventDefault();
+	            	if(action == 'move')
+	            		Alert.show("移动失败请刷新重试","错误");
+	            	else if(action == 'copy')
+	            		Alert.show("复制失败请刷新重试","错误");
+	        		return;
+	        	}
+        	} else if(action == 'save'){
+        		Alert.show("保存成功");
+        	}
+        }
+    ]]>
+    </mx:Script>
+	<mx:Tree id="classTree" dataProvider="{classData}" labelField="@label" iconFunction="iconFun"
+		doubleClickEnabled="true" itemDoubleClick="doubleClick(event);"
+		dragEnabled="true" dragMoveEnabled="true" dropEnabled="true" dragDrop="onTreeDragDrop(event)" dragComplete="onDragComplete(event);"
+		width="100%" height="100%"/>
+	<mx:ControlBar>
+		<mx:Button label="新建" click="addClass()"/>
+		<mx:Button label="删除" click="deleteClass()"/>
+		<mx:Button label="保存" click="saveClass()"/>
+		<mx:Button label="刷新" click="this.parentDocument.loadXML();"/>
+	</mx:ControlBar>
+	<mx:Text id="localName" visible="true"/>
+	<mx:RemoteObject id="modelRO" destination="modelController" showBusyCursor="true" result="modelROServiceResultHandler(event)"/>
+</mx:Panel>

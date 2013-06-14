@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Panel xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%" xmlns:mapping="mapping.*" xmlns:view="mapping.view.*"
+	title="setTableTitle()" titleIcon="@Embed(source='../assets/table/table.gif')" layout="vertical" creationComplete="initTab();"
+	dragEnter="onDragEnter(event)" dragOver="onDragOver(event)" dragDrop="onTabsDragDrop(event)" dragExit="onDragExit(event)">
+	<mx:Script>
+	<![CDATA[
+		import dart.MyListEvent;
+		import dart.mapping.ClassTabEvent;
+		import dart.mapping.TableThumbEvent;
+		import mx.collections.ArrayCollection;
+		import mx.collections.XMLListCollection;
+		import mx.containers.TabNavigator;
+		import mx.controls.Alert;
+		import mx.controls.listClasses.ListBase;
+		import mx.controls.Tree;
+		import mx.core.DragSource;
+		import mx.core.UIComponent;
+		import mx.events.CloseEvent;
+		import mx.events.DragEvent;
+		import mx.events.ListEvent;
+		import mx.managers.DragManager;
+		import mx.managers.PopUpManager;
+		import mapping.SemregFile;
+		import mx.utils.ArrayUtil;
+		import mx.rpc.events.ResultEvent;
+        
+              
+        public var nav:TabNavigator = new TabNavigator();
+        private function initTab():void {
+        	nav.percentHeight = 100;
+        	nav.percentWidth = 100;
+        	register.addChild(nav);
+        }
+        
+        /***************table*********************/  
+        private var _table:XML;
+        [Bindable]
+		public var tableURI:String = ' ';
+        [Bindable]
+        public function set table(t:XML):void {
+        	_table=t;
+        	tableURI = t.uri;
+			setTableTitle();        	
+        }
+		public function get table():XML {return _table;}	
+		[Embed(source="../assets/table/table.gif")] public var tableIcn:Class;
+        [Embed(source="../assets/table/table_flash.gif")] public var viewIcn:Class;	
+		private function setTableTitle():String {
+			var uri:String = table.uri;
+			var type:String = table.localName();
+			if(type == 'table'){
+				columnList = tableColumnList(uri);
+	    		title = "数据库表：" + uri.substring(uri.lastIndexOf("}")+1);
+	    		this.titleIcon = tableIcn;
+	  		} else if(type == 'view'){
+	  			columnList = viewColumnList(table);
+	    		title = "视图：" + uri.substring(uri.lastIndexOf("}")+1);
+	    		this.titleIcon = viewIcn;
+	    		constructView.visible = true;
+	  		}
+		    freshOnto();
+	    	return title
+		}
+		 /**************column handler****************/
+        import dart.util.Map;
+		import dart.util.HashMap;
+        public var map:Map = new HashMap();
+        [Bindable]
+	    public var columnList:ArrayCollection;
+		public function viewColumnList(t:XML):ArrayCollection{
+			if(map.containsKey(t.uri))
+				return (map.getValue(t.uri) as ArrayCollection);
+			var columns:XMLList = t.tables.table.columns.column as XMLList;
+			var list:ArrayCollection = new ArrayCollection();
+			for(var i:int=0; i<columns.length(); i++){
+				var column:XML = columns[i] as XML;
+				if(column.attribute('aliasName') != undefined)
+					list.addItem(column.attribute('aliasName').toString());
+				else
+					list.addItem(column.text().toString());
+			}
+			map.put(t.uri,list);
+			return list;
+		}
+		public function tableColumnList(tableUri:String):ArrayCollection {
+			if(map.containsKey(tableUri))
+				return (map.getValue(tableUri) as ArrayCollection);
+			var dbLabel:String = tableUri.substring(tableUri.lastIndexOf("}")+1,tableUri.lastIndexOf("."));
+			var tableLabel:String = tableUri.substring(tableUri.lastIndexOf(".")+1);
+			var tree:XML = getDBTree();
+			var xmlListCollection: XMLListCollection= new XMLListCollection(tree.db.(@label==dbLabel).table.(@label==tableLabel).column.@label);
+			var list:ArrayCollection = new ArrayCollection(xmlListCollection.toArray());
+			map.put(tableUri,list);
+			return new ArrayCollection(xmlListCollection.toArray());
+		}
+		//import mx.utils.ObjectUtil;
+		public function getColumnList(tableUri:String):ArrayCollection {
+		    //Alert.show(tableUri,'table');
+			if(map.containsKey(tableUri))
+				return (map.getValue(tableUri) as ArrayCollection);
+			var columns:ArrayCollection = new ArrayCollection();
+			var tableData:XMLListCollection = this.parentDocument.tableData;//semregFile
+		    for(var i:int = 0; i<tableData.length; i++){
+		    	var tableItem:XML = tableData.getItemAt(i) as XML;
+		    	if(tableItem.uri == tableUri){
+		    		if(tableItem.localName() == 'table')
+		    			i = tableData.length;
+		    		else
+		    			columns = viewColumnList(tableItem);
+		    		break;
+		    	}
+		    }
+		    if(i == tableData.length){
+		    	//Alert.show(tableUri,'table');
+		    	columns = tableColumnList(tableUri);
+		    }
+	    	return columns;
+		}
+		private function getDBTree():XML{
+			return this.parentDocument.parentDocument.parentDocument.dbTree.dbs;//MappingPanel
+		}
+		private var tabSeletedIndex:int = 0;
+		private function freshOnto():void {
+			var ontologys:XMLList = _table.elements("ontologies").elements('ontology');
+	       	nav.removeAllChildren();
+        	for(var i:int=0; i<ontologys.length(); i++){
+        		var ontologyTab:ClassTab = new ClassTab();
+        		ontologyTab.ontologyXML = ontologys[i];
+        		ontologyTab.addEventListener(ClassTabEvent.UPDATE, classTabEventHandler);
+        		nav.addChild(ontologyTab);
+        	}
+        	nav.selectedIndex = tabSeletedIndex;
+		}
+		
+		/***************handler*********************/
+		private function classTabEventHandler(event:ClassTabEvent):void {
+        	if (event.type == ClassTabEvent.UPDATE) {
+        		tabSeletedIndex = nav.selectedIndex;
+        		//Alert.show(event.onto.toString(),"update in table editor");//show
+            	var children:XMLList = table.elements('ontologies').elements('ontology');
+                for(var i:Number=0; i < children.length(); i++) {
+                	//Alert.show(children[i],i+"");//show
+                	if(children[i].ontologyURI == event.onto.ontologyURI) {
+                		//Alert.show(event.onto,"editor match");//show
+                    	children[i] = event.onto;
+        				dispatchEvent(new TableThumbEvent(TableThumbEvent.UPDATE, table));
+        				freshOnto();
+        				break;
+                    }
+                }
+        	} else {
+                dispatchEvent(event);
+            }
+        }
+        
+		/***************drag class*********************/
+		private function onDragEnter(event:DragEvent): void {
+        	if(event.dragInitiator is Tree){
+        		var ds:DragSource = event.dragSource;
+        		if(!ds.hasFormat("treeItems")) return;// no useful data
+        		var items:Array = ds.dataForFormat("treeItems") as Array;
+        		for(var i:Number=0; i < items.length; i++){
+        			var item:XML = XML(items[i]);
+        			if( item.localName() != "type" ) return; // not what we want
+        		}
+        	}
+        	// If the Tree control passes or the dragInitiator is not a Tree control,  accept the drop.
+        	DragManager.acceptDragDrop(UIComponent(event.currentTarget));
+        }
+        private function onDragOver(event:DragEvent): void {
+        	if(event.dragInitiator is Tree)
+        		DragManager.showFeedback(DragManager.COPY);
+        	else
+        		DragManager.showFeedback(DragManager.NONE);
+        }
+        private function onDragExit(event:DragEvent): void {
+        	var dropTarget:ListBase = ListBase(event.currentTarget);
+        	dropTarget.hideDropFeedback(event);
+        }
+        private function onTabsDragDrop(event:DragEvent): void {
+        	var ds:DragSource = event.dragSource;
+        	var arr:Array;
+        	if(ds.hasFormat("items")) {
+        		arr = ds.dataForFormat("items") as Array;
+        	} else if(ds.hasFormat("treeItems")) {
+        		arr = ds.dataForFormat("treeItems") as Array;
+        	}
+        	for(var i:Number=0; i < arr.length; i++) {
+        		var node:XML = XML(arr[i]);
+        		var isMain:String = 'true';
+        		var ontologyEle:XML = new XML(<ontology isMainOnto={isMain}/>);
+        		var uri:String = node.@uri;
+        		var Label:String = node.@label;
+        		ontologyEle.appendChild(<ontologyURI label={Label}>{uri}</ontologyURI>);
+        		ontologyEle.appendChild(<ontoProps/>);
+        		_table.elements("ontologies")[0].appendChild(ontologyEle);
+        		freshOnto();
+        		dispatchEvent(new TableThumbEvent(TableThumbEvent.UPDATE, table));        		
+        	}
+        	onDragExit(event);
+        }
+        
+        private function deleteClass():void {
+        	Alert.show("确定删除本体\""+(nav.selectedChild as ClassTab).label+"\"？","删除映射本体", 3, this, confirmDeleteClass);
+		}
+		private function confirmDeleteClass(event:CloseEvent):void {
+           	if (event.detail==Alert.YES){
+        		var onto:XML = (nav.selectedChild as ClassTab).ontologyXML;
+	        	var children:XMLList = table.ontologies.ontology;
+	        	for(var i:int=0; i < children.length(); i++){
+	        		if(children[i] == onto) {
+	        			delete children[i];
+	        		}
+	        	}
+	        	freshOnto();
+	        	dispatchEvent(new TableThumbEvent(TableThumbEvent.UPDATE, table));
+           	}
+        }
+    ]]>
+    </mx:Script>
+    <mx:ViewStack id="viewEditor" height="100%" width="100%">
+	    <mx:VBox id="register" height="100%" width="100%">
+		    <mx:HBox paddingBottom="15" paddingLeft="15" paddingRight="15" paddingTop="15" width="100%">
+		    	<mx:Label text="URI:" fontWeight="bold"/>
+		    	<mx:Label id="ontoURI" text="{table.uri}"/>
+		    	<mx:Spacer width="100%" />
+		    	<mx:Button icon="@Embed('../assets/ontology/class_delete.png')" label="删除" toolTip="删除映射本体类" click="deleteClass();"/>
+		    	<mx:Button id="constructView" icon="@Embed('../assets/table/table_gear.gif')" label="构造" toolTip="构造映射视图" visible="false" 
+		    		click="viewEditor.selectedChild=viewConstructor;this.parentDocument.parentDocument.selectAccordion(0);"/>
+		    </mx:HBox>
+    	</mx:VBox>
+		<view:ViewConstructor id="viewConstructor" view="{table}" width="100%" height="100%"/>
+    </mx:ViewStack>
+</mx:Panel>

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" initialize="initializeHandler(event)" layout="absolute">
+	<mx:Script><![CDATA[
+    	import dart.mapping.JoinParser;
+    	import mx.collections.ArrayCollection;
+		import mx.controls.Alert;
+		import mx.utils.ObjectUtil;
+		private function initializeHandler(event:Event):void {
+			var join:XML = 
+			  <join id="broader">
+			    <left>
+			      <join>
+			        <left id="1">Subject</left>
+			        <right id="2">T_CONCEPT_RELS</right>
+			        <constraint>
+			          <column refid="ID" father="1">TCMLSVIEW.ID</column>
+			          <column refid="ChildID" father="2">CHILD_ID</column>
+			          <condition>###ID### = ###ChildID###</condition>
+			        </constraint>
+			      </join>
+			    </left>
+			    <right id="3">Object</right>
+			    <constraint>
+			      <column refid="ParentID" father="2">PARENT_ID</column>
+			      <column refid="ID" father="3">ID</column>
+			      <condition>###ParentID### = ###ID###</condition>
+			    </constraint>
+			  </join>;
+			var joinParser:JoinParser = new JoinParser(join);
+			var tableArray:ArrayCollection = joinParser.parse();
+			trace(mx.utils.ObjectUtil.toString(tableArray));
+		}
+	]]></mx:Script>
+</mx:Application>

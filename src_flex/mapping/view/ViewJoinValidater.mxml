@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow title="Beta" xmlns:mx="http://www.adobe.com/2006/mxml" layout="horizontal" width="420" height="500" creationComplete="init()">	
+    <mx:Script>
+    <![CDATA[
+    	import dart.util.HashMap;
+    	import dart.util.Map;
+    	import dart.graph.*;
+		import mx.managers.PopUpManager;  
+		import mx.utils.ObjectUtil;
+		import mx.controls.Alert;
+
+    	private var LineLength:Number = 100;
+    	private var CenterCoordinate:Number = 200;
+    	public var tables:XMLList;
+    	public var joins:XMLList;
+    	private function init():void
+    	{
+    		//join Array
+    		var countMap:Map = new HashMap();
+    		var count:int;
+    		var joinArray:Array = new Array();
+    		for(var i:int=0; i<joins.length(); i++) {
+    			var left:String = joins[i].left[0].toString();
+    			count = 1;
+    			if(countMap.containsKey(left))
+    				count = (countMap.getValue(left) as int) +1;
+    			countMap.put(left,count);
+    			var right:String = joins[i].right[0].toString();
+    			count = 1;
+    			if(countMap.containsKey(right))
+    				count = (countMap.getValue(right) as int)+1;
+    			countMap.put(right,count);
+    			var join:Object = new Object();
+    			join['left']=left;
+    			join['right']=right;
+    			join['drawed']=false;
+    			joinArray.push(join);
+    		}
+    		//find center node
+    		var center:String;
+    		for(i=0,count=0; i<tables.length(); i++) {
+    			var table:String = tables[i].@id;
+    			if(countMap.containsKey(table)){
+    				var tc:int = countMap.getValue(table) as int;
+    				if(tc>count){
+    					count = tc;
+    					center = table;
+    				}
+    			}
+    		}
+    		//draw center related node join
+    		var tableMap:Map = new HashMap();
+    		var coordinateArray:Array = new Array();
+			var circle:Circle = new Circle(center,center,CenterCoordinate,CenterCoordinate);
+			coordinateArray.push({x:CenterCoordinate,y:CenterCoordinate});
+			tableMap.put(center,circle);
+			var tableLabel:String;
+			var tableCount:int = 0;
+			for(i=0; i<joinArray.length; i++) {
+				join = joinArray[i];
+				if(join['left'] == center)
+					tableLabel = join['right'];
+				else if(join['right'] == center)
+					tableLabel = join['left'];
+				else
+					continue;
+				var cx:Number = CenterCoordinate + LineLength * Math.sin(2 * Math.PI * tableCount / count);
+				var cy:Number = CenterCoordinate + LineLength * Math.cos(2 * Math.PI * tableCount / count);
+				circle = new Circle(tableLabel,tableLabel,cx,cy);
+				tableMap.put(tableLabel,circle);
+				coordinateArray.push({x:cx,y:cy});
+				container.addChild(new Line(
+					(tableMap.getValue(center) as Circle).cx,
+					(tableMap.getValue(center) as Circle).cy,
+					(tableMap.getValue(tableLabel) as Circle).cx,
+					(tableMap.getValue(tableLabel) as Circle).cy));
+				tableCount++;
+				join['drawed']=true;
+			}
+			//draw other join
+			var hasJoin:Boolean = true;
+			while(hasJoin){
+				hasJoin = false;
+				for(i=0; i<joinArray.length; i++) {
+					join = joinArray[i];
+					if(join['drawed']==true)
+						continue;
+					if(tableMap.containsKey(join['left'] as String)){
+						center = join['left'];
+						tableLabel = join['right'];
+					}
+					else if(tableMap.containsKey(join['right'] as String)){
+						center = join['right'];
+						tableLabel = join['left'];
+					}
+					else{
+						hasJoin = true;
+						continue;
+					}
+					//compute the coordinate of circle
+					var centerX:Number = (tableMap.getValue(center) as Circle).cx;
+					var centerY:Number = (tableMap.getValue(center) as Circle).cy;
+					for(tableCount=0; tableCount<12; tableCount++){
+						cx = centerX + LineLength * Math.sin(2 * Math.PI * tableCount / 12);
+						cy = centerY + LineLength * Math.cos(2 * Math.PI * tableCount / 12);
+						for(var j:int=0; j<coordinateArray.length; j++){
+							if(Math.abs((coordinateArray[j]['x'] as Number) - cx) < 60 ||
+								Math.abs((coordinateArray[j]['x'] as Number) - cx) < 60 ||
+								Math.abs(CenterCoordinate - cx) > 175 ||
+								Math.abs(CenterCoordinate - cy) < 175)
+								break;
+						}
+						if(j==coordinateArray.length)
+							break;
+					}
+					circle = new Circle(tableLabel,tableLabel,cx,cy);
+					tableMap.put(tableLabel,circle);
+					container.addChild(new Line(
+						(tableMap.getValue(center) as Circle).cx,
+						(tableMap.getValue(center) as Circle).cy,
+						(tableMap.getValue(tableLabel) as Circle).cx,
+						(tableMap.getValue(tableLabel) as Circle).cy));
+					tableCount++;
+					join['drawed']=true;
+				}
+    		}
+			//draw all nodes, including nodes with no edge
+			for(i=0;i<tables.length();i++){
+				tableLabel = tables[i].@id;
+				if(!tableMap.containsKey(tableLabel)){
+					centerX = CenterCoordinate;
+					centerY = CenterCoordinate;
+					for(tableCount=0; tableCount<12; tableCount++){
+						cx = centerX + 1.75 * LineLength * Math.sin(2 * Math.PI * tableCount / 12);
+						cy = centerY + 1.75 * LineLength * Math.cos(2 * Math.PI * tableCount / 12);
+						for(j=0; j<coordinateArray.length; j++){
+							if(Math.abs((coordinateArray[j]['x'] as Number) - cx) < 60 ||
+								Math.abs((coordinateArray[j]['x'] as Number) - cx) < 60 ||
+								Math.abs(CenterCoordinate - cx) > 175 ||
+								Math.abs(CenterCoordinate - cy) < 175)
+								break;
+						}
+						if(j==coordinateArray.length)
+							break;
+					}
+					circle = new Circle(tableLabel,tableLabel,cx,cy);
+					tableMap.put(tableLabel,circle);
+				}			
+				container.addChild(tableMap.getValue(tableLabel) as Circle);
+			}
+    	}
+    ]]> 
+    </mx:Script> 
+    <mx:VBox height="100%" width="100%" verticalAlign="middle">
+        <mx:Canvas width="100%" height="100%" id="container"/>
+        <mx:Button label="OK" click="PopUpManager.removePopUp(this);"/>
+    </mx:VBox>
+</mx:TitleWindow>

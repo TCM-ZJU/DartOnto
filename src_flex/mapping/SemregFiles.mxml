@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Panel xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%" xmlns:mapping="mapping.*"
+	title="语义映射器">
+	<mx:Script>
+	<![CDATA[
+		import mx.rpc.events.ResultEvent;
+		import mx.controls.Spacer;
+		import mx.managers.PopUpManager;
+		import mx.controls.Alert;
+		import mx.events.CloseEvent;
+		
+		private var action:String;
+		/**************new file**************/
+		[Bindable]
+        private var dialog:NewFileDialog = new NewFileDialog();
+		private function newSemregFile():void {
+			dialog = NewFileDialog(PopUpManager.createPopUp( this, NewFileDialog , true));
+			PopUpManager.centerPopUp(dialog);
+			dialog.addEventListener("ok_click",insertFile);
+		}
+		private function insertFile(event:Event):void {
+			action = 'new';
+			semregRO.newFile(dialog.fileName.text);	
+		}
+		
+		/**************open file****************/
+		private var list:FileList = new FileList();
+		[Bindable]
+		private var filename:String = "tcmct.semreg";
+		private function chooseFile():void {
+			list = FileList(PopUpManager.createPopUp( this, FileList , true));
+			PopUpManager.centerPopUp(list);
+			list.addEventListener("ok_click",openSemregFile);
+        }
+        private function openSemregFile(event:Event):void{
+        	open(list.filename);
+			PopUpManager.removePopUp(list);
+		}
+		private function open(filename:String):void {
+			var file:SemregFile = new SemregFile();
+        	file.filename = filename;
+			files.addChild(file);
+			files.selectedChild = file;
+		}
+		/**************close file****************/
+        private function confirmCloseSemregFile():void{
+        	var file:SemregFile = files.selectedChild as SemregFile;
+        	if(file.isChange){
+        		Alert.show("文件\""+file.filename+"\"已经修改，是否保存文件？","保存文件", 3, this, closeSemregFile);
+        	} else {
+        		files.removeChild(file);
+        	}
+		}
+		private function closeSemregFile(event:CloseEvent):void {
+           	if (event.detail==Alert.YES){
+        		files.removeChild(saveFile());
+           	} else if (event.detail==Alert.NO){
+           		var file:SemregFile = files.selectedChild as SemregFile;
+           		files.removeChild(file);
+           	}
+        }
+        
+        /**************save file****************/
+        private function saveFile():SemregFile {
+           	var file:SemregFile = files.selectedChild as SemregFile;
+           	file.save();
+           	return file;
+        }
+        
+        /**************saveAll file****************/
+        private function saveAllFile():void {
+        	for(var i:int=0; i<files.numChildren; i++){
+        		var file:SemregFile = files.getChildAt(i) as SemregFile;
+           		file.save();
+        	}
+        }
+        
+        /**************delete file****************/
+        private function confirmDeleteSemregFile():void{
+        	var file:SemregFile = files.selectedChild as SemregFile;
+        	Alert.show("删除文件将不可恢复，确实删除文件\""+file.filename+"\"？","删除文件", 3, this, deleteSemregFile);
+		}
+        private function deleteSemregFile(event:CloseEvent):void {
+        	if (event.detail==Alert.YES){
+        		action = 'delete';        		
+				var file:SemregFile = files.selectedChild as SemregFile;
+        		semregRO.deleteFile(file.filename);
+           	}
+        }
+        
+        /**************change view****************/
+        private function changeView(view:String):void {
+        	var file:SemregFile = files.selectedChild as SemregFile;
+        	if(view == 'tables')
+        		file.returnTileView();
+        	else
+        		file.returnXmlView();
+        }
+        
+        /**************handler****************/
+		private function semregROServiceResultHandler(event:ResultEvent):void {
+			if(action == 'new') {
+				var result:Boolean = event.result as Boolean;
+				if(result) {
+					open(dialog.fileName.text);
+				} else {
+					Alert.show("文件未创建成功","提示");
+				}
+				PopUpManager.removePopUp(dialog);
+			} else if(action == 'delete'){
+				var dfile:SemregFile = files.selectedChild as SemregFile;
+        		files.removeChild(dfile);
+			}			
+		}
+		/***************other********************/
+		public function selectAccordion(index:int):void {
+			this.parentDocument.accordion.selectedIndex=index;
+		}
+	]]>
+	</mx:Script>
+	<mx:HBox width="100%">
+		<mx:LinkButton id="newFile" icon="@Embed('../assets/file/page.gif')" label="新建" click="newSemregFile()"/>
+		<mx:LinkButton id="openFile" icon="@Embed('../assets/file/open-folder.jpg')" label="打开" click="chooseFile()"/>
+		<mx:LinkButton id="save" icon="@Embed('../assets/file/save.gif')" label="保存" click="saveFile()"/>
+		<mx:LinkButton id="saveAll" icon="@Embed('../assets/file/save_all.gif')" label="全部保存" click="saveAllFile()"/>
+		<mx:LinkButton id="closeFile" icon="@Embed('../assets/file/check.gif')" label="关闭" click="confirmCloseSemregFile()"/>
+		<mx:LinkButton id="deleteFile" icon="@Embed('../assets/file/delete.gif')" label="删除" click="confirmDeleteSemregFile()"/>
+		<mx:Spacer width="100%"/>
+		<mx:LinkButton id="tables" icon="@Embed('../assets/table/table_multi.gif')" toolTip="到多表视图" click="changeView('tables')"/>
+		<mx:LinkButton id="xml" icon="@Embed('../assets/file/script_edit.gif')" toolTip="到xml视图" click="changeView('xml')"/>
+	</mx:HBox>
+	<mx:TabNavigator id="files" width="100%" height="100%"/>
+	<mx:RemoteObject id="semregRO" destination="semregController" showBusyCursor="true" result="semregROServiceResultHandler(event)"/>
+</mx:Panel>

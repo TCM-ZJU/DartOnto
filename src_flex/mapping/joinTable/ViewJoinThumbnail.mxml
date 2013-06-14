@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" height="70" creationComplete="init()"
+	rollOver="rollOverHandler(event)" rollOut="rollOutHandler(event)"
+	borderSides="left right bottom top" borderThickness="2" borderColor="blue" xmlns:joinTable="mapping.joinTable.*">
+	<mx:Script><![CDATA[
+		import dart.util.Map;
+		import mx.collections.ArrayCollection;
+		import mx.controls.Alert;
+    	import dart.mapping.JoinParser;
+		override public function set data(value:Object):void {
+			super.data = value;
+			if (data != null) {
+				tables = this.parentDocument.view.tables.table;//ViewConstructor
+				if(inited)
+	    			init();
+			}
+		}
+		private var inited:Boolean = false;
+		private function init():void{
+			var join:XML = data as XML;
+			left.constraint = join.constraint[0];
+			left.tableNode = join.left[0];
+			right.constraint = join.constraint[0];
+			right.tableNode = join.right[0];
+			inited = true;
+		}
+		public var tables:XMLList;
+		private function editJoin():void{
+			var joins:XMLList = this.parentDocument.view.join;
+			var join:XML = data as XML;
+			for(var i:int=0; i<joins.length(); i++){
+				if(joins[i] == join)
+					joins[i]=new XML(
+						<join>
+						    <left id="1">{left.tableCB.selectedItem}</left>
+						    <right id="2">{right.tableCB.selectedItem}</right>
+						    <constraint>
+						    	<column refid="ID1" father="1">{left.columnCB.selectedItem}</column>
+						    	<column refid="ID2" father="2">{right.columnCB.selectedItem}</column>
+						    	<condition>###ID1### = ###ID2###</condition>
+						    </constraint>
+						</join>);
+			}
+			this.parentDocument.update();
+		}
+		private function deleteJoin():void{
+			var joins:XMLList = this.parentDocument.view.join;
+			var join:XML = data as XML;
+			for(var i:int=0; i<joins.length(); i++){
+				if(joins[i] == join)
+					delete joins[i];
+			}
+			this.parentDocument.update();
+		}
+		/************ roll *************/
+		private function rollOverHandler(event:MouseEvent):void
+		{
+            setStyle("borderColor", "#CCCCCC");
+            setStyle("dropShadowEnabled", true);
+            buttons.visible = true;
+        }
+
+        private function rollOutHandler(event:MouseEvent):void
+		{
+            setStyle("borderColor", "#FFFFFF");
+            setStyle("dropShadowEnabled", false);
+			buttons.visible = false;
+        }
+	]]></mx:Script>
+	<mx:Text width="100%" height="100%"/>
+	<mx:HBox>
+		<joinTable:ViewJoinTable id="left"/>
+		<joinTable:ViewJoinTable id="right"/>
+	</mx:HBox>
+	<mx:VBox id="buttons" visible="false" verticalGap="4" paddingRight="8" right="8" bottom="12">
+        <mx:Button id="Edit" icon="@Embed('../../assets/table/table_in.gif')"
+        	click="editJoin();" 
+            width="30" toolTip="Update Join Reference"/>
+        <mx:Button id="Delete" icon="@Embed('../../assets/table/table_out.gif')" 
+        	click="deleteJoin()" 
+            width="30" toolTip="Delete the Join form view"/>
+    </mx:VBox>
+</mx:Canvas>

@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" creationComplete="init()" layout="vertical" horizontalAlign="center" width="600" height="250" xmlns:joinTable="mapping.joinTable.*">
+	<mx:Script>
+    <![CDATA[
+    	import mapping.TableEditor;
+    	import dart.mapping.JoinParser;
+    	import mx.collections.ArrayCollection;
+		import mx.controls.Alert;
+		import mx.utils.ArrayUtil;
+		import mx.rpc.events.ResultEvent;
+		import mx.managers.PopUpManager;
+		
+    	import mapping.TableEditor;
+		public var tableEditor:TableEditor;
+	    public var tableList:XMLList;
+		public var constraint:XML;
+		private function init():void {
+			tableIDs = tableList.@id;
+			tables.selectedIndex = -1;
+			
+			var left:XML = constraint.left[0];
+			leftType.selectedItem = left.@type;			
+			var tableStr:String = left.toString();
+			var tableID:String = tableStr.substr(0,tableStr.indexOf('.'));
+			tables.selectedItem = tableID;
+			columns.tableUri = tableList.(@id==tableID).uri;
+			columns.column = tableStr.substr(tableStr.indexOf('.')+1);
+						
+			var right:XML = constraint.right[0];
+			rightType.selectedItem = right.@type;
+			value.text = right.toString();
+			
+			//opertype.selectedItem = operTypes.(@data==constraint.opertype[0].toString());			
+			opertype.selectedItem = operTypes.getItemAt(constraint.opertype[0]);
+	    }
+	    private function changeTable():void{	    	
+			var tableID:String = tables.selectedLabel;
+			columns.tableUri = tableList.(@id==tableID).uri;
+		}
+	    private function returnContent():void {
+			if(	leftType.selectedIndex == -1 || 
+				rightType.selectedIndex == -1 ||
+				opertype.selectedIndex == -1 ||
+				tables.selectedIndex == -1 ||
+				columns.selectedIndex == -1 ||
+				value.text == ''){
+				Alert.show("请完整添入信息","提示");return;}		
+			constraint = new XML(
+				<view_constraint>
+					<left type={leftType.selectedLabel}>{tables.selectedLabel}.{columns.selectedLabel}</left>
+					<right type={rightType.selectedLabel}>{value.text}</right>
+					<opertype>{opertype.selectedItem['data'].toString()}</opertype>
+					<!-- opertype{=, reg, >, <, >=, <=}-->
+				</view_constraint>);
+         	dispatchEvent(new Event("ok_click"));
+        }
+	    [Bindable]private var leftTypes:Array = ["column"];
+	    [Bindable]private var rightTypes:Array = ["int","string"];
+	    [Bindable]private var tableIDs:XMLList;
+	    [Bindable]private var operTypes:ArrayCollection = new ArrayCollection([{label:"=", data:1},{label:"reg", data:2},
+	   		{label:">", data:3},{label:"<", data:4},{label:">=", data:5},{label:"<=", data:6}]);
+    ]]>
+    </mx:Script>
+    <mx:HBox height="50%">
+    	<mx:Form id="left" width="50%" height="100%">
+    		<mx:FormHeading label="Left"/>
+            <mx:FormItem label="Type">
+            	<mx:ComboBox id="leftType" dataProvider="{leftTypes}" width="120"/>
+            </mx:FormItem>
+            <mx:FormItem label="Table">
+            	<mx:ComboBox id="tables" dataProvider="{tableIDs}" width="120" change="changeTable()"/>
+            </mx:FormItem>
+        </mx:Form>
+    	<mx:Form id="right" width="50%" height="100%">
+    		<mx:FormHeading label="Right"/>
+            <mx:FormItem label="Type">
+            	<mx:ComboBox id="rightType" dataProvider="{rightTypes}" width="120"/>
+            </mx:FormItem>
+        </mx:Form>
+    </mx:HBox>
+    <mx:Grid height="50%">
+    	<mx:GridRow>
+    		<mx:GridItem>
+    			<mx:Label text="Column" width="120"/>
+    		</mx:GridItem>
+    		<mx:GridItem>
+    			<mx:Label text="Operation" width="120"/>
+    		</mx:GridItem>
+    		<mx:GridItem>
+    			<mx:Label text="Value" width="120"/>
+    		</mx:GridItem>
+    	</mx:GridRow>
+    	<mx:GridRow>
+    		<mx:GridItem>    			
+	    		<joinTable:TableColumn id="columns" width="120"/>
+    		</mx:GridItem>
+    		<mx:GridItem>    			
+	    		<mx:ComboBox id="opertype" dataProvider="{operTypes}" width="120"/>
+    		</mx:GridItem>
+    		<mx:GridItem>    			
+	    		<mx:TextInput id="value" width="120"/>
+    		</mx:GridItem>
+    	</mx:GridRow>
+    </mx:Grid>
+	<mx:HBox width="100%">
+		<mx:Button label="Delete" click="dispatchEvent(new Event('delete_click'));"/>
+		<mx:Spacer width="100%"/>
+		<mx:Button label="OK" click="returnContent();"/>
+		<mx:Spacer width="100%"/>
+		<mx:Button label="Cancel" click="PopUpManager.removePopUp(this);"/>
+	</mx:HBox>
+</mx:TitleWindow>

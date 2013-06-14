@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:mapping="mapping.*" width="100%" height="100%" 
+	label="{ontologyXML.ontologyURI.@label}" icon="@Embed(source='../assets/ontology/class.png')" 
+	creationComplete="init();">
+	<mx:Script>
+	<![CDATA[
+		import mx.collections.ArrayCollection;
+		import mx.controls.Alert;
+		import mx.events.ItemClickEvent;
+		import mx.rpc.events.ResultEvent;
+		import dart.mapping.ClassTabEvent;
+		import dart.mapping.PropThumbEvent;
+		import dart.mapping.JoinEvent;
+		import mx.collections.ArrayCollection;
+		import mx.utils.ArrayUtil;
+		
+		[Bindable]
+		private var _ontology:XML;
+		[Bindable]
+        public function set ontologyXML(onto:XML):void {
+        	_ontology = onto;
+        	if(_ontology.@uritype == undefined)
+        		_ontology.@uritype = "2";
+        	uritypeRG.selectedValue=_ontology.@uritype;
+        }
+		public function get ontologyXML():XML {return _ontology;}
+        
+        private function init():void {
+        	propertyTiles.addEventListener(PropThumbEvent.ADD, propThumbEventHandler);
+        	propertyTiles.addEventListener(PropThumbEvent.UPDATE, propThumbEventHandler);
+        	propertyTiles.addEventListener(PropThumbEvent.DELETE, propThumbEventHandler);
+        	propertyTiles.addEventListener(JoinEvent.ADD, joinEventHandler);
+        	propertyTiles.addEventListener(JoinEvent.EDIT, joinEventHandler);
+        	setUriCol();
+        }
+	    [Bindable]
+	    private var columnList:ArrayCollection;
+        private function setUriCol():void{
+        	if(_ontology.@uritype == 1){
+        		CBStack.selectedChild = colView;
+        		columnList = this.parentDocument.columnList;
+	        	if(_ontology.@uricol == undefined) {
+	        		_ontology.@uricol = columnList.getItemAt(0);
+	        		dispatchEvent(new ClassTabEvent(ClassTabEvent.UPDATE, ontologyXML));
+	        	}
+	        	uricolCB.selectedItem = _ontology.@uricol;
+        	}
+        	else{
+        		CBStack.selectedChild = propView;
+        		var defined:Boolean = true;
+        		var i:int = 0;
+        		if(_ontology.@uricol == undefined){
+        			//Alert.show("undefined uri col");
+        			for(i=0; i<propertyData.length; i++){
+        				if(propertyData[i].ontologyURI == 'http://www.w3.org/2004/02/skos/core#prefLabel'){
+        					_ontology.@uricol = 'http://www.w3.org/2004/02/skos/core#prefLabel';
+        					break;
+        				}
+        			}
+        			if(i==propertyData.length)
+        				_ontology.@uricol = propertyData[0].ontologyURI;
+        			dispatchEvent(new ClassTabEvent(ClassTabEvent.UPDATE, ontologyXML));
+        		}
+        		var prop:Object;
+        		for(i=0; i<propertyData.length; i++){
+        			prop = propertyData.getItemAt(i) as Object;
+        			//Alert.show(prop.toString());
+        			if(prop.ontologyURI == _ontology.@uricol)
+        				break;
+        		}
+        		uripropCB.selectedIndex = i;
+        	}        	
+        }
+        
+        private function propThumbEventHandler(event:PropThumbEvent):void {
+        	if (event.type == PropThumbEvent.ADD) {
+        		//Alert.show(event.prop,'add in class tab');
+        		var prop:XML = event.prop;
+        		var type:String = prop.name();
+        		var uri:String;
+        		var Label:String;
+        		var newProp:XML;
+        		if(type == 'property') {
+        			uri = prop.@uri;
+        			Label = prop.@label;
+        			newProp = XML('<ontoProp><ontologyURI label="'+Label+'">'+uri+"</ontologyURI><column/></ontoProp>");
+        		} else {
+        			uri = prop.@propertyUri;
+        			Label = prop.@property;
+        			newProp = XML('<ontoProp><ontologyURI label="'+Label+'">'+uri+"</ontologyURI><table/><joinref/></ontoProp>");
+        		}
+        		_ontology.elements("ontoProps")[0].appendChild(newProp);
+        		//Alert.show(newProp.toString(),'add in class tab');//
+        	} else if(event.type == PropThumbEvent.DELETE){
+        		var children:XMLList = ontologyXML.ontoProps.ontoProp;
+                var i:Number=0;
+                for(; i < children.length(); i++) {
+	                if(children[i] == event.prop) {
+	                    delete children[i];
+	                }
+	            }
+	        } else if (event.type == PropThumbEvent.UPDATE) {
+	        	//Alert.show(event.prop,'update in class tab');
+	        } else {
+	            dispatchEvent(event);
+	        }
+        	dispatchEvent(new ClassTabEvent(ClassTabEvent.UPDATE, ontologyXML));
+        }
+        
+        private function joinEventHandler(event:JoinEvent):void {
+        	this.parentDocument.dispatchEvent(event);
+        }
+        
+        private function radioGroup_itemClick(event:ItemClickEvent):void {
+        	_ontology.@uritype = event.currentTarget.selectedValue;
+        	_ontology.@uricol = undefined;
+        	setUriCol();
+        }
+		public function changeColumn():void {
+			if(_ontology.@uritype == "1"){
+				_ontology.@uricol = uricolCB.selectedLabel;
+        		//Alert.show(uricolCB.selectedLabel,"1");
+        	}
+        	else{
+        		_ontology.@uricol = uripropCB.selectedItem.ontologyURI;
+        		//Alert.show(uripropCB.selectedItem.ontologyURI,"2");
+        	}
+        	dispatchEvent(new ClassTabEvent(ClassTabEvent.UPDATE, ontologyXML));
+		}
+		public function proName(item:Object):String {
+	    	var str:String = item.ontologyURI;
+	    	return str.substring(str.lastIndexOf("#")+1);
+	    }
+	]]>
+	</mx:Script>
+	<mx:XMLListCollection id="propertyData" source="{ontologyXML.ontoProps.ontoProp}"/>
+	<mx:HBox width="100%" height="100%">
+		<mapping:PropertyTiles id="propertyTiles" proData="{propertyData}" width="100%" height="100%"/>
+		<mx:Panel title="URI 设置" width="200" height="100%">
+			<mx:RadioButtonGroup id="uritypeRG" itemClick="radioGroup_itemClick(event);"/>
+			<mx:RadioButton id="column" value="1" label="使用数据表列" group="{uritypeRG}" />
+        	<mx:RadioButton id="property" value="2" label="使用本体属性" group="{uritypeRG}" />
+        	<mx:ViewStack id="CBStack" creationPolicy="all" width="100%" height="100%">
+        		<mx:VBox id="propView">
+        			<mx:Label text="请选择生成URI的属性"/>
+        			<mx:ComboBox id="uripropCB" dataProvider="{propertyData}" change="changeColumn()" labelFunction="proName"/>
+        		</mx:VBox>
+        		<mx:VBox id="colView">
+        			<mx:Label text="请选择生成URI的列"/>
+        			<mx:ComboBox id="uricolCB" dataProvider="{columnList}" change="changeColumn()"/>        			
+        		</mx:VBox>        		
+        	</mx:ViewStack>
+		</mx:Panel>
+	</mx:HBox>
+</mx:Canvas>

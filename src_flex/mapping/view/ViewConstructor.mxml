@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:view="mapping.view.*">
+	<mx:Script><![CDATA[
+		import mapping.TableEditor;
+		import mx.collections.ArrayCollection;
+		import mx.controls.Alert;
+		import mx.utils.ArrayUtil;
+		import dart.mapping.TableThumbEvent;
+		import mapping.SemregFile;
+		
+		import mx.controls.Tree;
+		import mx.events.DragEvent;
+		import mx.core.DragSource;
+		import mx.core.UIComponent;
+		import mx.managers.DragManager;
+		import mx.controls.listClasses.ListBase;
+		
+		import mx.events.CloseEvent;
+
+		public var _view:XML;
+		[Bindable]
+		public function set view(table:XML):void{
+			_view = table;
+			var uri:String = _view.uri;
+			Name = uri.substring(uri.lastIndexOf(".")+1);
+			Schema = uri.substring(uri.lastIndexOf("}")+1,uri.lastIndexOf("."));
+		}
+		public function get view():XML{
+			return _view;
+		}
+		[Bindable]private var Name:String;
+		[Bindable]private var Schema:String;
+		private function setViewName():void{
+			var uri:String = _view.uri;
+			_view.uri = uri.substring(0,uri.lastIndexOf("}")+1)+schemaName.text+"."+viewName.text;
+			update();
+		}
+		
+		public function update():void{
+			this.parentDocument.dispatchEvent(new TableThumbEvent(TableThumbEvent.UPDATE, _view));
+		}
+		
+		private function ViewListLable(item:Object):String{
+			var data:XML = XML(item);
+			var str:String = data.uri;
+	    	return str.substring(str.lastIndexOf("}")+1);
+		}
+		[Embed(source="../../assets/table/table_flash.gif")] public var viewIcn:Class;
+		[Embed(source="../../assets/table/table.gif")] public var tableIcn:Class;
+   		private function iconFun(item:Object):*{
+   			var node:XML = XML(item);
+   			if(node.localName() == "table")
+   				return tableIcn;
+   			else
+   				return viewIcn;
+   		}
+   		
+   		/******************drag & drop************************/
+   		private function onDragEnter(event:DragEvent): void {
+        	if(event.dragInitiator is Tree){
+        		var ds:DragSource = event.dragSource;
+        		if(!ds.hasFormat("treeItems")) return;// no useful data
+        		var items:Array = ds.dataForFormat("treeItems") as Array;
+        		for(var i:Number=0; i < items.length; i++){
+        			var item:XML = XML(items[i]);
+        			if( item.localName() != "table" ) return; // not what we want
+        		}  
+        	}
+        	// If the Tree control passes or the dragInitiator is not a Tree control,  accept the drop.
+        	DragManager.acceptDragDrop(UIComponent(event.currentTarget));
+        }
+        private function onDragOver(event:DragEvent): void {
+        	DragManager.showFeedback(DragManager.COPY);
+        }
+        private function onDragExit(event:DragEvent): void {
+        	var dropTarget:ListBase = ListBase(event.currentTarget);
+        	dropTarget.hideDropFeedback(event);
+        }
+        private function onTilesDragDrop(event:DragEvent): void {
+        	var ds:DragSource = event.dragSource;
+        	//var dropTarget:TileList = TileList(event.currentTarget);
+        	var arr:Array;
+        	if(ds.hasFormat("items")) {
+        		arr = ds.dataForFormat("items") as Array;
+        	} else if(ds.hasFormat("treeItems")) {
+        		arr = ds.dataForFormat("treeItems") as Array;
+        	}
+        	for(var i:Number=0; i < arr.length; i++) {
+        		var node:XML = XML(arr[i]);        		
+        		var newTable:XML;
+        		if(node.localName() == 'table')
+        			newTable = XML("<table><uri>{"+mapping.SemregFile.prefix+"}"+node.@localName+"</uri><columns/></table>");
+        		else if(node.localName() == 'view')
+        			newTable = XML("<table><uri>"+node.uri+"</uri><columns/></table>");
+        		_view.tables[0].appendChild(newTable);
+        		update();
+        	}
+        	onDragExit(event);
+        }
+        /*********************tables*********************/
+        private var tableID:String;
+		public function deleteTable(t:XML):void{
+           	tableID = t.@id;
+           	Alert.show("确定将表\""+tableID+"\"从源表列表中删除？","删除源表", 3, this, confirmDeleteTable);
+        }
+        private function confirmDeleteTable(event:CloseEvent):void {
+        	if (event.detail == Alert.YES){
+	    		var children:XMLList = _view.tables.table;
+                for(var i:Number=0; i < children.length(); i++) {
+                    if(children[i].@id == tableID) {
+                        delete children[i];
+        				update();
+                    }
+                }
+             }
+        }
+        /***********************join*************************/
+        private function addJoin():void {
+        	_view.appendChild(new XML(
+        	<join>
+        		<left id="1"></left>
+        		<right id="2"></right>
+        		<constraint>
+        			<column refid="ID1" father="1"></column>
+        			<column refid="ID2" father="2"></column>
+        			<condition> ###ID1### = ###ID2### </condition>
+        		</constraint>
+        	</join>));
+        	update();
+        } 
+		private var validateDialog:ViewJoinValidater;
+        private function validateJoin():void {
+        	validateDialog = ViewJoinValidater(PopUpManager.createPopUp( this, ViewJoinValidater , true));
+			validateDialog.tables = view.tables.table;
+			validateDialog.joins = view.join;
+			PopUpManager.centerPopUp(validateDialog);
+        }
+        /****************constraint ********************/
+		import mx.managers.PopUpManager;
+		private var constraintDialog:ViewConstaintDialog;
+		public function editConstraint():void {
+			constraintDialog = ViewConstaintDialog(PopUpManager.createPopUp( this, ViewConstaintDialog , true));
+			constraintDialog.tableEditor = this.parentDocument as TableEditor;
+			constraintDialog.tableList = view.tables.table;
+			constraintDialog.constraint = _view.view_constraint[0];
+			PopUpManager.centerPopUp(constraintDialog);
+			constraintDialog.addEventListener("ok_click",constraintHandler);
+			constraintDialog.addEventListener("delete_click",constraintDeleteHandler);
+		}
+		private function constraintHandler(event:Event):void {
+			PopUpManager.removePopUp(constraintDialog);
+			_view.view_constraint[0] = constraintDialog.constraint;
+			update();
+		}
+		private function constraintDeleteHandler(event:Event):void {
+			Alert.show("确定删除视图限制","提示",3, this, confirmDeleteConstraint);			
+		}
+		private function confirmDeleteConstraint(event:CloseEvent):void {
+        	if (event.detail == Alert.YES){
+        		PopUpManager.removePopUp(constraintDialog);
+				delete _view.view_constraint[0];
+				update();
+             }
+        }
+	]]></mx:Script>
+	<mx:HBox paddingBottom="15" paddingLeft="15" paddingRight="15" paddingTop="15" width="100%">	
+	   	<mx:Label text="Schema:"/>
+	   	<mx:TextInput id="schemaName" text="{Schema}" enter="setViewName()" toolTip="回车修改视图Schema"/>	
+	   	<mx:Spacer width="15" />
+	   	<mx:Label text="视图名称:" fontWeight="bold"/>
+	   	<mx:TextInput id="viewName" text="{Name}" enter="setViewName()" toolTip="回车修改视图名称"/>
+	   	<mx:Spacer width="100%" />
+	   	<mx:Button id="view_constraint" icon="@Embed('../../assets/table/table_edit.gif')" label="限制" toolTip="编辑视图限制条件"
+	   		click="editConstraint()"/>
+	   	<mx:Button id="constructView" icon="@Embed('../../assets/table/table_edit.gif')" label="映射" toolTip="返回映射界面"
+	   		click="this.parentDocument.viewEditor.selectedIndex=0;"/>
+	</mx:HBox>
+	<mx:HBox width="100%" height="100%">
+		<mx:Panel title="源表列表" width="100%" height="100%">
+			<mx:Canvas width="100%" height="100%" horizontalScrollPolicy="off">
+				<mx:TileList id="tables" width="100%"
+					dataProvider="{view.tables.table}" itemRenderer="mapping.view.ViewTableThumbnail"
+					dragEnter="onDragEnter(event)" dragOver="onDragOver(event)" dragDrop="onTilesDragDrop(event)" dragExit="onDragExit(event)"/>			
+			</mx:Canvas>
+		</mx:Panel>
+		<mx:VDividedBox width="330" height="100%">
+			<mx:Panel title="Join List" width="100%" height="60%">
+				<mx:List width="100%" height="100%" 
+					dataProvider="{view.join}" itemRenderer="mapping.joinTable.ViewJoinThumbnail"/>
+				<mx:ControlBar>
+					<mx:Button label="新建" click="addJoin()"/>
+					<mx:Button label="验证" click="validateJoin()"/>
+				</mx:ControlBar>
+			</mx:Panel>
+			<mx:Panel title="View List" width="100%" height="40%" >
+				<mx:List width="100%" height="100%"
+					dataProvider="{this.parentDocument.parentDocument.tableData}" 
+					iconFunction="{iconFun}" labelFunction="{ViewListLable}" dragEnabled="true"/>
+			</mx:Panel>
+		</mx:VDividedBox>
+	</mx:HBox>
+</mx:VBox>

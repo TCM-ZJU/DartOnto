@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" title="Class Chooser" layout="vertical" width="300" height="600" creationComplete="getClassTreeService.send()">
+	<mx:Script>
+	<![CDATA[
+		import mx.controls.Alert;
+		import mx.rpc.events.ResultEvent;
+		import mx.managers.PopUpManager;
+        
+        [Embed(source="assets/ontology/class.png")] public var classIcon:Class;
+   		private function iconFun(item:Object):*{return classIcon;}
+   		
+   		[Bindable]
+		public var objLabel:String;
+		public var objUri:String;
+		private function returnObj():void {
+           	if(classTree.selectedIndex<0){
+           		Alert.show("请选择宾语","提示");
+           		return;
+           	}
+			var select:XML = classTree.selectedItem as XML;
+			objLabel = select.@label;
+			objUri = select.@uri;
+         	dispatchEvent(new Event("ok_click"));
+        }
+    ]]>
+    </mx:Script>
+	<mx:Tree id="classTree" dataProvider="{getClassTreeService.lastResult}" labelField="@label" iconFunction="iconFun"
+		width="100%" height="100%"/>
+	<mx:HBox>
+		<mx:Button label="OK" click="returnObj();"/>
+		<mx:Button label="Cancel" click="PopUpManager.removePopUp(this);"/>
+	</mx:HBox>
+	<mx:HTTPService id="getClassTreeService" url="./getClassTree" resultFormat="e4x"/>
+</mx:TitleWindow>

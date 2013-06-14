@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%" label="资源映射器" xmlns:mapping="mapping.*">
+	<mx:Style source="css/main.css"/>
+	<mx:Accordion id="accordion" width="300" height="100%" headerStyleName="chinese">
+		<mapping:DBTree id="dbTree"/>
+		<mapping:ClassSchema id="classSchema"/>
+	</mx:Accordion>
+	<mapping:SemregFiles/>
+</mx:HBox>

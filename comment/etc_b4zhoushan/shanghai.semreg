@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<tableregister>
+  <table>
+    <uri>{http://ccnt.cn/tcm}tcm.SH_WENXIAN</uri>
+    <ontologies>
+      <ontology isMainOnto="true" uritype="1" uricol="DOC_ID">
+        <ontologyURI label="中医文献">http://cintcm.ac.cn/onto#paper</ontologyURI>
+        <ontoProps>
+          <ontoProp>
+            <ontologyURI label="概念词">http://www.w3.org/2004/02/skos/core#prefLabel</ontologyURI>
+            <column>TITLE</column>
+          </ontoProp>
+          <ontoProp>
+            <ontologyURI label="异名">http://www.w3.org/2004/02/skos/core#altLabel</ontologyURI>
+            <column>FOREIGN_TITLE</column>
+          </ontoProp>
+          <ontoProp>
+            <ontologyURI label="作者">http://cintcm.ac.cn/onto#authorname</ontologyURI>
+            <column>AUTHOR</column>
+          </ontoProp>
+          <ontoProp>
+            <ontologyURI label="来源">http://purl.org/dc/elements/1.1/source</ontologyURI>
+            <column>SOURCE</column>
+          </ontoProp>
+          <ontoProp>
+            <ontologyURI label="来源">http://purl.org/dc/elements/1.1/source</ontologyURI>
+            <column>ORI_SOURCE</column>
+          </ontoProp>
+          <ontoProp>
+            <ontologyURI label="摘要">http://cintcm.ac.cn/onto#abstract</ontologyURI>
+            <column>ABSTRACT</column>
+          </ontoProp>
+          <ontoProp>
+            <ontologyURI label="关键字">http://cintcm.ac.cn/onto#keyword</ontologyURI>
+            <column>KEY_WORD</column>
+          </ontoProp>
+        </ontoProps>
+      </ontology>
+    </ontologies>
+  </table>
+  <table>
+    <uri>{http://ccnt.cn/tcm}tcm.SH_YAOLIYAOXING</uri>
+    <ontologies>
+      <ontology isMainOnto="true" uritype="1" uricol="ID">
+        <ontologyURI label="中药">http://cintcm.ac.cn/onto#herb</ontologyURI>
+        <ontoProps>
+          <ontoProp>
+            <ontologyURI label="概念词">http://www.w3.org/2004/02/skos/core#prefLabel</ontologyURI>
+            <column>YAOMING</column>
+          </ontoProp>
+          <ontoProp>
+            <ontologyURI label="异名">http://www.w3.org/2004/02/skos/core#altLabel</ontologyURI>
+            <column>YIMING</column>
+          </ontoProp>
+          <ontoProp>
+            <ontologyURI label="用途">http://cintcm.ac.cn/onto#application</ontologyURI>
+            <column>GONGYONG</column>
+          </ontoProp>
+          <ontoProp>
+            <ontologyURI label="临床研究">http://cintcm.ac.cn/onto#ClinicalResearch</ontologyURI>
+            <column>LINGCHUANG</column>
+          </ontoProp>
+          <ontoProp>
+            <ontologyURI label="用法">http://cintcm.ac.cn/onto#Usage</ontologyURI>
+            <column>YONGFA</column>
+          </ontoProp>
+          <ontoProp>
+            <ontologyURI label="用药忌宜">http://cintcm.ac.cn/onto#DrugTaboo</ontologyURI>
+            <column>YIJI</column>
+          </ontoProp>
+          <ontoProp>
+            <ontologyURI label="炮制方法">http://cintcm.ac.cn/onto#preparemethod</ontologyURI>
+            <column>PAOZHI</column>
+          </ontoProp>
+          <ontoProp>
+            <ontologyURI label="归经描述">http://cintcm.ac.cn/onto#tropismdscription</ontologyURI>
+            <column>GUIJING</column>
+          </ontoProp>
+          <ontoProp>
+            <ontologyURI label="性味描述">http://cintcm.ac.cn/onto#TasteandFlavordescription</ontologyURI>
+            <column>XINGWEI</column>
+          </ontoProp>
+          <ontoProp>
+            <ontologyURI label="基原">http://cintcm.ac.cn/onto#OriginalBase</ontologyURI>
+            <column>JIYUAN</column>
+          </ontoProp>
+          <ontoProp>
+            <ontologyURI label="药理作用描述">http://cintcm.ac.cn/onto#pharmacologicaleffects</ontologyURI>
+            <column>YAOLI</column>
+          </ontoProp>
+          <ontoProp>
+            <ontologyURI label="方剂组成描述">http://cintcm.ac.cn/onto#Prescriptiondescription</ontologyURI>
+            <column>CHENGFEN</column>
+          </ontoProp>
+        </ontoProps>
+      </ontology>
+    </ontologies>
+  </table>
+</tableregister>

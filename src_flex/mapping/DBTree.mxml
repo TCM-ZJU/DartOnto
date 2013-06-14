@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%" label="数据库" icon="@Embed(source='../assets/database/database.gif')" creationComplete="getTreeService.send()">
+	<mx:Script>
+	<![CDATA[
+		import mx.controls.Alert;
+		import mx.rpc.events.ResultEvent;
+		import mx.events.CloseEvent;
+		import mx.managers.PopUpManager;
+        
+        [Embed(source="../assets/database/database.gif")] public var dbIcn:Class;
+        [Embed(source="../assets/table/table.gif")] public var tableIcn:Class;
+        [Embed(source="../assets/record/record.gif")] public var recordIcn:Class;
+   		private function iconFun(item:Object):*{
+   			var node:XML = XML(item);
+   			if(node.localName() == "db")
+   				return dbIcn;
+   			else if(node.localName() == "table")
+   				return tableIcn;
+   			else
+   				return recordIcn;
+   		}
+   		
+   		[Bindable]
+   		public var dbs:XML;
+   		private function getTree(event:ResultEvent):void {
+   			dbs = event.result as XML;
+   		}
+   		private var action:String;
+		/**************new file**************/
+		[Bindable]
+        private var dialog:NewDBDialog = new NewDBDialog();
+		private function newRegDB():void {
+			dialog = NewDBDialog(PopUpManager.createPopUp( this, NewDBDialog , true));
+			PopUpManager.centerPopUp(dialog);
+			dialog.addEventListener("ok_click",insertFile);
+		}
+		private function insertFile(event:Event):void {
+			action = 'new';
+			dbRO.addDB(dialog.localName.text, 
+				dialog.ip.text+":"+dialog.port.text+":"+dialog.serviceName.text, 
+				dialog.user.text, dialog.pwd.text, dialog.type.text);	
+		}
+        
+        /**************save file****************/
+        private function saveDBFile():void {
+			action = 'save';
+           	dbRO.save();
+        }
+        
+        /**************delete file****************/
+        private function confirmDeleteDB():void{
+        	var db:XML = dbTree.selectedItem as XML;
+        	if(db == null)return;
+        	if(db.localName() != 'db')return;
+        	Alert.show("确定删除数据库\""+db.attribute("label")+"\"？","删除数据库", 3, this, deleteRegDB);
+		}
+        private function deleteRegDB(event:CloseEvent):void {
+        	if (event.detail==Alert.YES){
+        		action = 'delete';        		
+				var db:XML = dbTree.selectedItem as XML;
+        		dbRO.deleteDB(db.attribute("label").toString());
+           	}
+        }
+        
+        /**************handler****************/
+		private function dbROServiceResultHandler(event:ResultEvent):void {
+			if(action == 'new') {
+				var resultString:String = event.result as String;
+				var newDB:XML = XML(resultString);
+				dbs.appendChild(newDB);
+				PopUpManager.removePopUp(dialog);
+			} else if(action == 'delete'){
+				var db:XML = dbTree.selectedItem as XML;
+				var children:XMLList = XMLList(db.parent()).children();
+                for(var i:Number=0; i < children.length(); i++) { 
+                    if( children[i].@label == db.@label ) {
+                        delete children[i];
+                    }
+                }
+			}
+		}
+    ]]>
+    </mx:Script>
+    <mx:HBox width="100%">
+		<mx:LinkButton id="newDB" label="新建" icon="@Embed('../assets/database/database_add.gif')" click="newRegDB()"/>
+		<mx:LinkButton id="deleteDB" label="删除" icon="@Embed('../assets/database/database_delete.gif')" click="confirmDeleteDB()"/>
+		<mx:LinkButton id="saveDB" label="导入" icon="@Embed('../assets/database/database_go.gif')" click="saveDBFile()"/>
+	</mx:HBox>
+	<mx:Tree id="dbTree" dataProvider="{dbs}" labelField="@label" iconFunction="iconFun" showRoot="false"		
+		width="100%" height="100%" dragEnabled="true"/>
+	<mx:HTTPService id="getTreeService" url="./getDBTree" resultFormat="e4x" result="getTree(event);" showBusyCursor="true"/>
+	<mx:RemoteObject id="dbRO" destination="dbController" showBusyCursor="true" result="dbROServiceResultHandler(event)"/>
+</mx:VBox>

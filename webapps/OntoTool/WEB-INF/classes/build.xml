@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+
+<project name="OntoTool" default="tomcat-backup" basedir="./">
+	<property name="name" value="onto_tool"/>
+	<property name="backup.dir" value="c:/OntoTool_backup"/>	
+	
+	<target name="tomcat-backup">
+		<tstamp>
+			<format property="nowstamp" pattern="yyyyMMdd" locale="en"/>
+		</tstamp>
+		<mkdir dir="${backup.dir}/${nowstamp}"/>
+		<copy todir="${backup.dir}/${nowstamp}">
+			<fileset dir="${basedir}/etc">
+				<include name="**/*" />
+			</fileset>
+		</copy>
+	</target>
+
+</project>

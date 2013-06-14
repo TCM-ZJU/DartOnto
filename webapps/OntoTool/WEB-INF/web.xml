@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE web-app PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN" "http://java.sun.com/dtd/web-app_2_3.dtd">
+<web-app>
+
+    <display-name>tcmOntology</display-name>
+    <description>BlazeDS Application</description>
+
+	<context-param>
+		<param-name>flex.class.path</param-name>
+		<param-value>/WEB-INF/flex/hotfixes,/WEB-INF/flex/jars</param-value>
+	</context-param>
+	
+	<!-- Class Service -->
+    <servlet>
+        <servlet-name>GetClassTreeService</servlet-name>
+        <servlet-class>
+            ontoService.ClassTreeServlet
+        </servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>GetClassTreeService</servlet-name>
+        <url-pattern>/getClassTree</url-pattern>
+    </servlet-mapping>    
+    
+    <servlet>
+        <servlet-name>GetClassObjectService</servlet-name>
+        <servlet-class>
+            ontoService.ClassObjectServlet
+        </servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>GetClassObjectService</servlet-name>
+        <url-pattern>/getClassObject</url-pattern>
+    </servlet-mapping>    
+    
+    <servlet>
+        <servlet-name>GetRelationTreeService</servlet-name>
+        <servlet-class>
+            ontoService.RelationTreeServlet
+        </servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>GetRelationTreeService</servlet-name>
+        <url-pattern>/getRelationTree</url-pattern>
+    </servlet-mapping>    
+    
+    <!-- Database Service -->
+    <servlet>
+        <servlet-name>GetDBTreeService</servlet-name>
+        <servlet-class>
+            mappingService.DBTreeServlet
+        </servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>GetDBTreeService</servlet-name>
+        <url-pattern>/getDBTree</url-pattern>
+    </servlet-mapping>
+    
+    <!-- Mapping Service -->
+    <servlet>
+        <servlet-name>GetSemregService</servlet-name>
+        <servlet-class>
+            mappingService.GetSemregServlet
+        </servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>GetSemregService</servlet-name>
+        <url-pattern>/getSemreg</url-pattern>
+    </servlet-mapping>    
+    
+    <servlet>
+        <servlet-name>GetSemregListService</servlet-name>
+        <servlet-class>
+            mappingService.GetSemregListServlet
+        </servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>GetSemregListService</servlet-name>
+        <url-pattern>/getSemregList</url-pattern>
+    </servlet-mapping>    
+    
+    <!-- Instance Service -->
+    <servlet>
+        <servlet-name>GetThesaurusService</servlet-name>
+        <servlet-class>
+            instanceService.ThesaurusServlet
+        </servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>GetThesaurusService</servlet-name>
+        <url-pattern>/getThesaurus</url-pattern>
+    </servlet-mapping>
+    
+    <servlet>
+        <servlet-name>GetPropertyService</servlet-name>
+        <servlet-class>
+            instanceService.PropertyServlet
+        </servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>GetPropertyService</servlet-name>
+        <url-pattern>/getProperty</url-pattern>
+    </servlet-mapping>
+    
+    <servlet>
+        <servlet-name>GetUriPropertyService</servlet-name>
+        <servlet-class>
+            instanceService.PropertyUriServlet
+        </servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>GetUriPropertyService</servlet-name>
+        <url-pattern>/getUriProperty</url-pattern>
+    </servlet-mapping>
+    
+    <servlet>
+        <servlet-name>RecordPropertyService</servlet-name>
+        <servlet-class>
+            instanceService.RecordPropertyServlet
+        </servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>RecordPropertyService</servlet-name>
+        <url-pattern>/getRecordProperty</url-pattern>
+    </servlet-mapping>
+    
+    <servlet>
+        <servlet-name>GetCorrelativeService</servlet-name>
+        <servlet-class>
+            instanceService.CorrelativeServlet
+        </servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>GetCorrelativeService</servlet-name>
+        <url-pattern>/getCorrelative</url-pattern>
+    </servlet-mapping>
+    
+    <servlet>
+        <servlet-name>GetConceptService</servlet-name>
+        <servlet-class>
+            instanceService.ConceptServlet
+        </servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>GetConceptService</servlet-name>
+        <url-pattern>/getConcept</url-pattern>
+    </servlet-mapping>
+    
+    <servlet>
+        <servlet-name>GetMapService</servlet-name>
+        <servlet-class>
+            instanceService.MapServlet
+        </servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>GetMapService</servlet-name>
+        <url-pattern>/getMap</url-pattern>
+    </servlet-mapping>
+    
+    <servlet>
+        <servlet-name>GetTypeService</servlet-name>
+        <servlet-class>
+            instanceService.TypeServlet
+        </servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>GetTypeService</servlet-name>
+        <url-pattern>/getType</url-pattern>
+    </servlet-mapping>
+    
+    <servlet>
+        <servlet-name>GetRelatedTermService</servlet-name>
+        <servlet-class>
+            instanceService.RelatedTermServlet
+        </servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>GetRelatedTermService</servlet-name>
+        <url-pattern>/getRelatedTerm</url-pattern>
+    </servlet-mapping>
+    
+    <!-- Sparql Service -->
+    <servlet>
+        <servlet-name>SparqlService</servlet-name>
+        <servlet-class>
+            sparqlService.SparqlServlet
+        </servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>SparqlService</servlet-name>
+        <url-pattern>/sparql</url-pattern>
+    </servlet-mapping>
+    	
+    <!-- end of Custom Service -->
+
+    <!-- Http Flex Session attribute and binding listener support -->
+    <listener>
+        <listener-class>flex.messaging.HttpFlexSession</listener-class>
+    </listener>
+
+    <!-- MessageBroker Servlet -->
+    <servlet>
+        <servlet-name>MessageBrokerServlet</servlet-name>
+        <display-name>MessageBrokerServlet</display-name>
+        <servlet-class>flex.messaging.MessageBrokerServlet</servlet-class>
+        <init-param>
+            <param-name>services.configuration.file</param-name>
+            <param-value>/WEB-INF/flex/services-config.xml</param-value>
+       </init-param>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>MessageBrokerServlet</servlet-name>
+        <url-pattern>/messagebroker/*</url-pattern>
+    </servlet-mapping>
+
+    <welcome-file-list>
+        <welcome-file>index.html</welcome-file>
+        <welcome-file>index.htm</welcome-file>
+    </welcome-file-list>
+
+    <!-- for WebSphere deployment, please uncomment -->
+    <!--
+    <resource-ref>
+        <description>Flex Messaging WorkManager</description>
+        <res-ref-name>wm/MessagingWorkManager</res-ref-name>
+        <res-type>com.ibm.websphere.asynchbeans.WorkManager</res-type>
+        <res-auth>Container</res-auth>
+        <res-sharing-scope>Shareable</res-sharing-scope>
+    </resource-ref>
+    -->
+
+</web-app>

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" width="274" height="70" xmlns:joinTable="mapping.joinTable.*">
+	<mx:Script>
+    <![CDATA[
+    	import mx.collections.XMLListCollection;
+    	import mx.utils.ObjectUtil;
+    	import mx.collections.ArrayCollection;
+		import mx.controls.Alert;
+		import mx.utils.ObjectUtil;
+    	import mapping.TableEditor;
+		public var tableEditor:TableEditor
+		[Bindable]private var columnList:ArrayCollection;
+		[Bindable]private var tableList:XMLList;
+		override public function set data(value:Object):void {
+			super.data = value;
+			if (data != null) {
+				tableEditor = this.parentDocument.tableEditor;
+				var tableData:XMLListCollection = tableEditor.parentDocument.tableData;
+				tableList = tableData.elements('uri');
+				var tableUri:String = data['uri'] as String
+				table.selectedItem = tableUri;
+				left.tableUri = tableUri;
+				right.tableUri = tableUri;
+				left.column = data['left'] as String;
+				right.column = data['right'] as String;
+		 	}
+	    }
+	    private function ViewListLable(item:Object):String{
+			var str:String = item.toString();
+	    	return str.substring(str.lastIndexOf("}")+1);
+		}
+		private function changeTable():void{
+			var tableUri:String = table.selectedItem.toString();
+			left.tableUri = tableUri;
+			right.tableUri = tableUri;
+		}
+		public function isLegal():Boolean {
+			return (table.selectedIndex > -1 &&
+					left.selectedIndex > -1 &&
+					right.selectedIndex > -1);
+		}
+    ]]>
+    </mx:Script>
+	<mx:ComboBox id="table" width="268" height="28" dataProvider="{tableList}" labelFunction="{ViewListLable}" change="changeTable()"/>
+	<mx:HBox>
+		<joinTable:TableColumn id="left"/>
+		<joinTable:TableColumn id="right"/>
+		<!--mx:ComboBox id="left" width="130" height="28" dataProvider="{columnList}"/>
+		<mx:ComboBox id="right" width="130" height="28" dataProvider="{columnList}"/-->
+	</mx:HBox>
+</mx:VBox>

@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<tableregister>
+  <table>
+    <uri>{http://ccnt.cn/tcm}tcm.C_ZHENH</uri>
+    <ontologies>
+      <ontology isMainOnto="true">
+        <ontologyURI label="证候">http://cintcm.ac.cn/onto#Syndrome</ontologyURI>
+        <ontoProps>
+          <ontoProp>
+            <ontologyURI label="hasDifferentiation">http://cintcm.ac.cn/onto#hasDifferentiation</ontologyURI>
+            <table>{http://ccnt.cn/tcm}tcm.C_ZHENH</table>
+            <joinref>hasDifferentiation</joinref>
+          </ontoProp>
+          <ontoProp>
+            <ontologyURI label="概念词">http://www.w3.org/2004/02/skos/core#prefLabel</ontologyURI>
+            <column>ZHMC</column>
+          </ontoProp>
+          <ontoProp>
+            <ontologyURI label="使用方剂">http://cintcm.ac.cn/onto#use</ontologyURI>
+            <table>{http://ccnt.cn/tcm}tcm.C_ZHONGYZL</table>
+            <joinref>use</joinref>
+          </ontoProp>
+        </ontoProps>
+      </ontology>
+    </ontologies>
+  </table>
+  <join id="hasDifferentiation">
+    <left id="1">Subject</left>
+    <right id="2">Object</right>
+    <constraint>
+      <column refid="ID1" father="1">ID</column>
+      <column refid="ID2" father="2">ID</column>
+      <condition>###ID1### = ###ID2###</condition>
+    </constraint>
+  </join>
+  <table>
+    <uri>{http://ccnt.cn/tcm}tcm.C_JIB</uri>
+    <ontologies>
+      <ontology isMainOnto="true">
+        <ontologyURI label="西医疾病">http://cintcm.ac.cn/onto#Disease</ontologyURI>
+        <ontoProps>
+          <ontoProp>
+            <ontologyURI label="现象表达">http://cintcm.ac.cn/onto#manifest</ontologyURI>
+            <table>{http://ccnt.cn/tcm}tcm.C_ZHENH</table>
+            <joinref>manifest</joinref>
+          </ontoProp>
+          <ontoProp>
+            <ontologyURI label="概念词">http://www.w3.org/2004/02/skos/core#prefLabel</ontologyURI>
+            <column>JBMC</column>
+          </ontoProp>
+        </ontoProps>
+      </ontology>
+    </ontologies>
+  </table>
+  <table>
+    <uri>{http://ccnt.cn/tcm}tcm.C_ZHONGYZL</uri>
+    <ontologies>
+      <ontology isMainOnto="true">
+        <ontologyURI label="方剂">http://cintcm.ac.cn/onto#formula</ontologyURI>
+        <ontoProps>
+          <ontoProp>
+            <ontologyURI label="概念词">http://www.w3.org/2004/02/skos/core#prefLabel</ontologyURI>
+            <column>FM</column>
+          </ontoProp>
+          <ontoProp>
+            <ontologyURI label="包含">http://cintcm.ac.cn/onto#contain</ontologyURI>
+            <table>{http://ccnt.cn/tcm}tcm.C_ZHONGYZL_YWXX</table>
+            <joinref>contain</joinref>
+          </ontoProp>
+        </ontoProps>
+      </ontology>
+    </ontologies>
+  </table>
+  <join id="manifest">
+    <left id="1">Subject</left>
+    <right id="2">Object</right>
+    <constraint>
+      <column refid="ID1" father="1">JBMC</column>
+      <column refid="ID2" father="2">JBMC</column>
+      <condition>###ID1### = ###ID2###</condition>
+    </constraint>
+  </join>
+  <join id="use" editable="false">
+    <left id="1">Subject</left>
+    <right id="2">Object</right>
+    <constraint>
+      <column refid="ID1" father="1">JBMC</column>
+      <column refid="ID2" father="2">JBMC</column>
+      <column refid="ID3" father="1">ZHMC</column>
+      <column refid="ID4" father="2">BZMC</column>
+      <condition>###ID1### = ###ID2###*###ID3### = ###ID4###</condition>
+    </constraint>
+  </join>
+  <table>
+    <uri>{http://ccnt.cn/tcm}tcm.C_ZHONGYZL_YWXX</uri>
+    <ontologies>
+      <ontology isMainOnto="true">
+        <ontologyURI label="中药">http://cintcm.ac.cn/onto#herb</ontologyURI>
+        <ontoProps>
+          <ontoProp>
+            <ontologyURI label="概念词">http://www.w3.org/2004/02/skos/core#prefLabel</ontologyURI>
+            <column>YWXX</column>
+          </ontoProp>
+        </ontoProps>
+      </ontology>
+    </ontologies>
+  </table>
+  <join id="contain">
+    <left id="1">Subject</left>
+    <right id="2">Object</right>
+    <constraint>
+      <column refid="ID1" father="1">ID</column>
+      <column refid="ID2" father="2">FORMULA_ID</column>
+      <condition>###ID1### = ###ID2###</condition>
+    </constraint>
+  </join>
+</tableregister>

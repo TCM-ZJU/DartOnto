@@ -1,0 +1,100 @@
+<motif>
+<NodeArray>
+
+<Node id="1">
+<Label>大黄</Label>
+<TypeUri>http://cintcm.ac.cn/onto#herb</TypeUri>
+<Type>中药</Type>
+</Node>
+
+<Node id="2">
+<Label>蓼科</Label>
+<TypeUri>http://www.w3.org/2004/02/skos/core#Concept</TypeUri>
+<Type>事物</Type>
+</Node>
+
+<Node id="3">
+<Label>双柏散</Label>
+<TypeUri>http://cintcm.ac.cn/onto#formula</TypeUri>
+<Type>方剂</Type>
+</Node>
+
+<Node id="4">
+<Label>皱叶酸模</Label>
+<TypeUri>http://www.w3.org/2004/02/skos/core#Concept</TypeUri>
+<Type>事物</Type>
+</Node>
+
+<Node id="5">
+<Label>双子叶植物纲</Label>
+<TypeUri>http://www.w3.org/2004/02/skos/core#Concept</TypeUri>
+<Type>事物</Type>
+</Node>
+
+<Node id="6">
+<Label>薄荷</Label>
+<TypeUri>http://cintcm.ac.cn/onto#herb</TypeUri>
+<Type>中药</Type>
+</Node>
+
+</NodeArray>
+<EdgeArray>
+
+<Edge id="1">
+<Label>上位词</Label>
+<TypeUri>http://www.w3.org/2004/02/skos/core#broader</TypeUri>
+<FromID>1</FromID>
+<ToID>2</ToID>
+</Edge>
+
+<Edge id="2">
+<Label>包含</Label>
+<TypeUri>http://cintcm.ac.cn/onto#contain</TypeUri>
+<FromID>3</FromID>
+<ToID>1</ToID>
+</Edge>
+
+<Edge id="3">
+<Label>下位词</Label>
+<TypeUri>http://www.w3.org/2004/02/skos/core#narrower</TypeUri>
+<FromID>2</FromID>
+<ToID>1</ToID>
+</Edge>
+
+<Edge id="4">
+<Label>下位词</Label>
+<TypeUri>http://www.w3.org/2004/02/skos/core#narrower</TypeUri>
+<FromID>2</FromID>
+<ToID>4</ToID>
+</Edge>
+
+<Edge id="5">
+<Label>上位词</Label>
+<TypeUri>http://www.w3.org/2004/02/skos/core#broader</TypeUri>
+<FromID>2</FromID>
+<ToID>5</ToID>
+</Edge>
+
+<Edge id="6">
+<Label>下位词</Label>
+<TypeUri>http://www.w3.org/2004/02/skos/core#narrower</TypeUri>
+<FromID>5</FromID>
+<ToID>2</ToID>
+</Edge>
+
+<Edge id="7">
+<Label>上位词</Label>
+<TypeUri>http://www.w3.org/2004/02/skos/core#broader</TypeUri>
+<FromID>4</FromID>
+<ToID>2</ToID>
+</Edge>
+
+<Edge id="8">
+<Label>包含</Label>
+<TypeUri>http://cintcm.ac.cn/onto#contain</TypeUri>
+<FromID>3</FromID>
+<ToID>6</ToID>
+</Edge>
+
+</EdgeArray>
+</motif>

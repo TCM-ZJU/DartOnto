@@ -1,0 +1,813 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<tableregister>
+  <table>
+    <uri>{http://ccnt.cn/tcm}tcm.BINGANQK</uri>
+    <ontologies>
+      <ontology isMainOnto="true">
+        <ontologyURI label="医案病例">http://cintcm.ac.cn/onto#medicalcase</ontologyURI>
+        <ontoProps>
+          <ontoProp>
+            <ontologyURI label="id">http://cintcm.ac.cn/onto#casereferenceid</ontologyURI>
+            <column>ID</column>
+          </ontoProp>
+          <ontoProp>
+            <ontologyURI label="医案编号">http://cintcm.ac.cn/onto#consilianumber</ontologyURI>
+            <column>BINGANBH</column>
+          </ontoProp>
+          <ontoProp>
+            <ontologyURI label="有转归信息">http://cintcm.ac.cn/onto#haszhuanguiinfo</ontologyURI>
+            <table>{http://ccnt.cn/tcm}tcm.ZHUANGUIXX</table>
+            <joinref>haszhuanguiinfo</joinref>
+          </ontoProp>
+          <ontoProp>
+            <ontologyURI label="有患者">http://cintcm.ac.cn/onto#hassufferer</ontologyURI>
+            <table>{http://ccnt.cn/tcm}tcm.HUANZHEQK</table>
+            <joinref>hassufferer</joinref>
+          </ontoProp>
+          <ontoProp>
+            <ontologyURI label="使用文献方法">http://cintcm.ac.cn/onto#haspaper</ontologyURI>
+            <table>{http://ccnt.cn/tcm}tcm.WENXIANQK</table>
+            <joinref>haspaper</joinref>
+          </ontoProp>
+          <ontoProp>
+            <ontologyURI label="做出诊断">http://cintcm.ac.cn/onto#hasDiagnosis</ontologyURI>
+            <table>{http://ccnt.cn/tcm}tcm.ZHENLIAOQK</table>
+            <joinref>hasDiagnosis</joinref>
+          </ontoProp>
+        </ontoProps>
+      </ontology>
+    </ontologies>
+  </table>
+  <table>
+    <uri>{http://ccnt.cn/tcm}tcm.ZHUANGUIXX</uri>
+    <ontologies>
+      <ontology isMainOnto="true">
+        <ontologyURI label="转归信息">http://cintcm.ac.cn/onto#VestingInformation</ontologyURI>
+        <ontoProps>
+          <ontoProp>
+            <ontologyURI label="随诊时间">http://cintcm.ac.cn/onto#suizsj</ontologyURI>
+            <column>SHIJIAN</column>
+          </ontoProp>
+          <ontoProp>
+            <ontologyURI label="随诊情况">http://cintcm.ac.cn/onto#suizqk</ontologyURI>
+            <column>SUIZHENQK</column>
+          </ontoProp>
+          <ontoProp>
+            <ontologyURI label="本次治疗结果">http://cintcm.ac.cn/onto#bencizljg</ontologyURI>
+            <column>BENCIZLJG</column>
+          </ontoProp>
+          <ontoProp>
+            <ontologyURI label="时间单位">http://cintcm.ac.cn/onto#shijiandw</ontologyURI>
+            <column>SHIJIANDW</column>
+          </ontoProp>
+          <ontoProp>
+            <ontologyURI label="医案id">http://cintcm.ac.cn/onto#caseid2</ontologyURI>
+            <column>ID</column>
+          </ontoProp>
+        </ontoProps>
+      </ontology>
+    </ontologies>
+  </table>
+  <table>
+    <uri>{http://ccnt.cn/tcm}tcm.BINGANQK2ZHUANGUIXX</uri>
+    <ontologies/>
+  </table>
+  <join id="haszhuanguiinfo" editable="false">
+    <left>
+      <join>
+        <left id="1">Subject</left>
+        <right id="2">{http://ccnt.cn/tcm}tcm.BINGANQK2ZHUANGUIXX</right>
+        <constraint>
+          <column refid="ID1" father="1">ID</column>
+          <column refid="PID2" father="2">PID</column>
+          <condition>###ID1### = ###PID2###</condition>
+        </constraint>
+      </join>
+    </left>
+    <right id="3">Object</right>
+    <constraint>
+      <column refid="CID2" father="2">CID</column>
+      <column refid="ID3" father="3">ID</column>
+      <condition>###CID2### = ###ID3###</condition>
+    </constraint>
+  </join>
+  <table>
+    <uri>{http://ccnt.cn/tcm}tcm.BINGANQK2HUANZHEQK</uri>
+    <ontologies/>
+  </table>
+  <table>
+    <uri>{http://ccnt.cn/tcm}tcm.HUANZHEQK</uri>
+    <ontologies>
+      <ontology isMainOnto="true">
+        <ontologyURI label="患者">http://cintcm.ac.cn/onto#sufferer</ontologyURI>
+        <ontoProps>
+          <ontoProp>
+            <ontologyURI label="医案id">http://cintcm.ac.cn/onto#sufferercaseid</ontologyURI>
+            <column>ID</column>
+          </ontoProp>
+          <ontoProp>
+            <ontologyURI label="患者性别">http://cintcm.ac.cn/onto#sufferersex</ontologyURI>
+            <column>XINGBIE</column>
+          </ontoProp>
+          <ontoProp>
+            <ontologyURI label="既往可否中医治疗">http://cintcm.ac.cn/onto#canbetcmtreament</ontologyURI>
+            <column>JIWANGKFZYZL</column>
+          </ontoProp>
+          <ontoProp>
+            <ontologyURI label="患者年龄">http://cintcm.ac.cn/onto#suffererage</ontologyURI>
+            <column>HUANZHENL</column>
+          </ontoProp>
+          <ontoProp>
+            <ontologyURI label="患者姓名">http://cintcm.ac.cn/onto#sufferername</ontologyURI>
+            <column>XINGMING</column>
+          </ontoProp>
+          <ontoProp>
+            <ontologyURI label="既往西药治疗效果">http://cintcm.ac.cn/onto#wmtreament</ontologyURI>
+            <column>JIWANGXYZLXG</column>
+          </ontoProp>
+          <ontoProp>
+            <ontologyURI label="既往中药治疗效果">http://cintcm.ac.cn/onto#tcmtreatment</ontologyURI>
+            <column>JIWANGZYZLXG</column>
+          </ontoProp>
+          <ontoProp>
+            <ontologyURI label="发病开始至就诊时间">http://cintcm.ac.cn/onto#sufferertime</ontologyURI>
+            <column>SHIJIAN</column>
+          </ontoProp>
+          <ontoProp>
+            <ontologyURI label="既往可否西药治疗">http://cintcm.ac.cn/onto#canbewmtreament</ontologyURI>
+            <column>JIWANGKFXYZL</column>
+          </ontoProp>
+        </ontoProps>
+      </ontology>
+    </ontologies>
+  </table>
+  <join id="hassufferer" editable="false">
+    <left>
+      <join>
+        <left id="1">Subject</left>
+        <right id="2">{http://ccnt.cn/tcm}tcm.BINGANQK2HUANZHEQK</right>
+        <constraint>
+          <column refid="ID1" father="1">ID</column>
+          <column refid="PID2" father="2">PID</column>
+          <condition>###ID1### = ###PID2###</condition>
+        </constraint>
+      </join>
+    </left>
+    <right id="3">Object</right>
+    <constraint>
+      <column refid="CID2" father="2">CID</column>
+      <column refid="ID3" father="3">ID</column>
+      <condition>###CID2### = ###ID3###</condition>
+    </constraint>
+  </join>
+  <table>
+    <uri>{http://ccnt.cn/tcm}tcm.WENXIANQK</uri>
+    <ontologies>
+      <ontology isMainOnto="true">
+        <ontologyURI label="中医文献">http://cintcm.ac.cn/onto#paper</ontologyURI>
+        <ontoProps>
+          <ontoProp>
+            <ontologyURI label="医案id">http://cintcm.ac.cn/onto#caseid1</ontologyURI>
+            <column>ID</column>
+          </ontoProp>
+          <ontoProp>
+            <ontologyURI label="文题">http://purl.org/dc/elements/1.1/title</ontologyURI>
+            <column>WENTI</column>
+          </ontoProp>
+          <ontoProp>
+            <ontologyURI label="期刊名称">http://cintcm.ac.cn/onto#periodicalname</ontologyURI>
+            <column>QIKANMC</column>
+          </ontoProp>
+          <ontoProp>
+            <ontologyURI label="年">http://cintcm.ac.cn/onto#periodicalyear</ontologyURI>
+            <column>NIAN</column>
+          </ontoProp>
+          <ontoProp>
+            <ontologyURI label="期">http://cintcm.ac.cn/onto#periodicalissue</ontologyURI>
+            <column>QI</column>
+          </ontoProp>
+          <ontoProp>
+            <ontologyURI label="卷">http://cintcm.ac.cn/onto#periodicalvolume</ontologyURI>
+            <column>JUAN</column>
+          </ontoProp>
+          <ontoProp>
+            <ontologyURI label="页码">http://cintcm.ac.cn/onto#periodicalpage</ontologyURI>
+            <column>YEMA</column>
+          </ontoProp>
+          <ontoProp>
+            <ontologyURI label="作者">http://cintcm.ac.cn/onto#authorname</ontologyURI>
+            <column>ZUOZHEXM</column>
+          </ontoProp>
+          <ontoProp>
+            <ontologyURI label="医家撰写">http://cintcm.ac.cn/onto#writebyyijia</ontologyURI>
+            <table>{http://ccnt.cn/tcm}tcm.ZUOZHEQK</table>
+            <joinref>writebyyijia</joinref>
+          </ontoProp>
+        </ontoProps>
+      </ontology>
+    </ontologies>
+  </table>
+  <table>
+    <uri>{http://ccnt.cn/tcm}tcm.WENXIANQK2BINGANQK</uri>
+    <ontologies/>
+  </table>
+  <join id="haspaper" editable="false">
+    <left>
+      <join>
+        <left id="1">Subject</left>
+        <right id="2">{http://ccnt.cn/tcm}tcm.WENXIANQK2BINGANQK</right>
+        <constraint>
+          <column refid="ID1" father="1">ID</column>
+          <column refid="CID2" father="2">CID</column>
+          <condition>###ID1### = ###CID2###</condition>
+        </constraint>
+      </join>
+    </left>
+    <right id="3">Object</right>
+    <constraint>
+      <column refid="PID2" father="2">PID</column>
+      <column refid="ID3" father="3">ID</column>
+      <condition>###PID2### = ###ID3###</condition>
+    </constraint>
+  </join>
+  <table>
+    <uri>{http://ccnt.cn/tcm}tcm.WENXIANQK2ZUOZHEQK</uri>
+    <ontologies/>
+  </table>
+  <table>
+    <uri>{http://ccnt.cn/tcm}tcm.ZUOZHEQK</uri>
+    <ontologies>
+      <ontology isMainOnto="true">
+        <ontologyURI label="医家">http://cintcm.ac.cn/onto#doctor</ontologyURI>
+        <ontoProps>
+          <ontoProp>
+            <ontologyURI label="医案id">http://cintcm.ac.cn/onto#doctorcaseid</ontologyURI>
+            <column>ID</column>
+          </ontoProp>
+          <ontoProp>
+            <ontologyURI label="行医年数">http://cintcm.ac.cn/onto#doctorage</ontologyURI>
+            <column>XINGYINS</column>
+          </ontoProp>
+          <ontoProp>
+            <ontologyURI label="名誉">http://cintcm.ac.cn/onto#reputation</ontologyURI>
+            <column>MINGYU</column>
+          </ontoProp>
+          <ontoProp>
+            <ontologyURI label="医生姓名">http://cintcm.ac.cn/onto#doctorname</ontologyURI>
+            <column>XINGMING</column>
+          </ontoProp>
+        </ontoProps>
+      </ontology>
+    </ontologies>
+  </table>
+  <join id="writebyyijia" editable="false">
+    <left>
+      <join>
+        <left id="1">Subject</left>
+        <right id="2">{http://ccnt.cn/tcm}tcm.WENXIANQK2ZUOZHEQK</right>
+        <constraint>
+          <column refid="ID1" father="1">ID</column>
+          <column refid="PID2" father="2">PID</column>
+          <condition>###ID1### = ###PID2###</condition>
+        </constraint>
+      </join>
+    </left>
+    <right id="3">Object</right>
+    <constraint>
+      <column refid="CID2" father="2">CID</column>
+      <column refid="ID3" father="3">ID</column>
+      <condition>###CID2### = ###ID3###</condition>
+    </constraint>
+  </join>
+  <table>
+    <uri>{http://ccnt.cn/tcm}tcm.ZHENLIAOQK</uri>
+    <ontologies>
+      <ontology isMainOnto="true">
+        <ontologyURI label="西医疾病">http://cintcm.ac.cn/onto#Disease</ontologyURI>
+        <ontoProps>
+          <ontoProp>
+            <ontologyURI label="概念词">http://www.w3.org/2004/02/skos/core#prefLabel</ontologyURI>
+            <column>XIYIBM</column>
+          </ontoProp>
+        </ontoProps>
+      </ontology>
+      <ontology isMainOnto="true">
+        <ontologyURI label="中医疾病">http://cintcm.ac.cn/onto#TCMDisease</ontologyURI>
+        <ontoProps>
+          <ontoProp>
+            <ontologyURI label="概念词">http://www.w3.org/2004/02/skos/core#prefLabel</ontologyURI>
+            <column>ZHONGYIBM</column>
+          </ontoProp>
+        </ontoProps>
+      </ontology>
+      <ontology isMainOnto="true">
+        <ontologyURI label="并发症">http://cintcm.ac.cn/onto#Complication</ontologyURI>
+        <ontoProps>
+          <ontoProp>
+            <ontologyURI label="概念词">http://www.w3.org/2004/02/skos/core#prefLabel</ontologyURI>
+            <column>BINGFAB</column>
+          </ontoProp>
+        </ontoProps>
+      </ontology>
+      <ontology isMainOnto="true">
+        <ontologyURI label="证候">http://cintcm.ac.cn/onto#Syndrome</ontologyURI>
+        <ontoProps>
+          <ontoProp>
+            <ontologyURI label="概念词">http://www.w3.org/2004/02/skos/core#prefLabel</ontologyURI>
+            <column>ZHENGHOUMC</column>
+          </ontoProp>
+        </ontoProps>
+      </ontology>
+      <ontology isMainOnto="true">
+        <ontologyURI label="治法">http://cintcm.ac.cn/onto#therapeuticmethod</ontologyURI>
+        <ontoProps>
+          <ontoProp>
+            <ontologyURI label="概念词">http://www.w3.org/2004/02/skos/core#prefLabel</ontologyURI>
+            <column>ZHIFA</column>
+          </ontoProp>
+        </ontoProps>
+      </ontology>
+      <ontology isMainOnto="true">
+        <ontologyURI label="结合诊断">http://cintcm.ac.cn/onto#IntegratedDiagnosis</ontologyURI>
+        <ontoProps>
+          <ontoProp>
+            <ontologyURI label="医案ID">http://cintcm.ac.cn/onto#medicaldiagnosisID</ontologyURI>
+            <column>ID</column>
+          </ontoProp>
+          <ontoProp>
+            <ontologyURI label="引起治疗">http://cintcm.ac.cn/onto#causetherapy</ontologyURI>
+            <table>{http://ccnt.cn/tcm}tcm.ZHILIAO</table>
+            <joinref>causetherapy</joinref>
+          </ontoProp>
+          <ontoProp>
+            <ontologyURI label="包含诊法">http://cintcm.ac.cn/onto#includediagnostic</ontologyURI>
+            <table>{http://ccnt.cn/tcm}tcm.BINGZHENGZF</table>
+            <joinref>includediagnostic</joinref>
+          </ontoProp>
+          <ontoProp>
+            <ontologyURI label="诊断日期">http://cintcm.ac.cn/onto#hasDiagnosisDate</ontologyURI>
+            <column>JIUZHENRQ</column>
+          </ontoProp>
+        </ontoProps>
+      </ontology>
+    </ontologies>
+  </table>
+  <table>
+    <uri>{http://ccnt.cn/tcm}tcm.BINGANQK2ZHENLIAOQK</uri>
+    <ontologies/>
+  </table>
+  <join id="hasDiagnosis" editable="false">
+    <left>
+      <join>
+        <left id="1">Subject</left>
+        <right id="2">{http://ccnt.cn/tcm}tcm.BINGANQK2ZHENLIAOQK</right>
+        <constraint>
+          <column refid="ID1" father="1">ID</column>
+          <column refid="PID2" father="2">PID</column>
+          <condition>###ID1### = ###PID2###</condition>
+        </constraint>
+      </join>
+    </left>
+    <right id="3">Object</right>
+    <constraint>
+      <column refid="CID2" father="2">CID</column>
+      <column refid="ID3" father="3">ID</column>
+      <condition>###CID2### = ###ID3###</condition>
+    </constraint>
+  </join>
+  <table>
+    <uri>{http://ccnt.cn/tcm}tcm.ZHILIAO</uri>
+    <ontologies>
+      <ontology isMainOnto="true">
+        <ontologyURI label="疗法">http://cintcm.ac.cn/onto#treatment</ontologyURI>
+        <ontoProps>
+          <ontoProp>
+            <ontologyURI label="治疗ID">http://cintcm.ac.cn/onto#therapyid</ontologyURI>
+            <column>ID</column>
+          </ontoProp>
+          <ontoProp>
+            <ontologyURI label="包含针灸疗法">http://cintcm.ac.cn/onto#includeAcupunctureTherapy</ontologyURI>
+            <table>{http://ccnt.cn/tcm}tcm.ZHENJIUZL</table>
+            <joinref>includeAcupunctureTherapy</joinref>
+          </ontoProp>
+          <ontoProp>
+            <ontologyURI label="包含按摩治疗">http://cintcm.ac.cn/onto#includemassagetherapy</ontologyURI>
+            <table>{http://ccnt.cn/tcm}tcm.ANMOZL</table>
+            <joinref>includemassagetherapy</joinref>
+          </ontoProp>
+          <ontoProp>
+            <ontologyURI label="包含其他治疗">http://cintcm.ac.cn/onto#includeothertherapy</ontologyURI>
+            <table>{http://ccnt.cn/tcm}tcm.QITAZL</table>
+            <joinref>includeothertherapy</joinref>
+          </ontoProp>
+          <ontoProp>
+            <ontologyURI label="包含方剂治疗">http://cintcm.ac.cn/onto#includeformulatherapy</ontologyURI>
+            <table>{http://ccnt.cn/tcm}tcm.ZHONGYAOZL</table>
+            <joinref>includeformulatherapy</joinref>
+          </ontoProp>
+        </ontoProps>
+      </ontology>
+    </ontologies>
+  </table>
+  <table>
+    <uri>{http://ccnt.cn/tcm}tcm.ZHENLIAOQK2ZHILIAO</uri>
+    <ontologies/>
+  </table>
+  <join id="causetherapy" editable="false">
+    <left>
+      <join>
+        <left id="1">Subject</left>
+        <right id="2">{http://ccnt.cn/tcm}tcm.ZHENLIAOQK2ZHILIAO</right>
+        <constraint>
+          <column refid="ID1" father="1">ID</column>
+          <column refid="PID2" father="2">PID</column>
+          <condition>###ID1### = ###PID2###</condition>
+        </constraint>
+      </join>
+    </left>
+    <right id="3">Object</right>
+    <constraint>
+      <column refid="CID2" father="2">CID</column>
+      <column refid="ID3" father="3">ID</column>
+      <condition>###CID2### = ###ID3###</condition>
+    </constraint>
+  </join>
+  <table>
+    <uri>{http://ccnt.cn/tcm}tcm.BINGZHENGZF</uri>
+    <ontologies>
+      <ontology isMainOnto="true">
+        <ontologyURI label="诊法">http://cintcm.ac.cn/onto#84</ontologyURI>
+        <ontoProps>
+          <ontoProp>
+            <ontologyURI label="医案ID">http://cintcm.ac.cn/onto#medicaldiagnosisID</ontologyURI>
+            <column>ID</column>
+          </ontoProp>
+          <ontoProp>
+            <ontologyURI label="包含就诊体征">http://cintcm.ac.cn/onto#includesign</ontologyURI>
+            <table>{http://ccnt.cn/tcm}tcm.JIUZHENTZ</table>
+            <joinref>includesign</joinref>
+          </ontoProp>
+          <ontoProp>
+            <ontologyURI label="包含就诊症状">http://cintcm.ac.cn/onto#includesymptom</ontologyURI>
+            <table>{http://ccnt.cn/tcm}tcm.JIUZHENZZ</table>
+            <joinref>includesymptom</joinref>
+          </ontoProp>
+        </ontoProps>
+      </ontology>
+    </ontologies>
+  </table>
+  <table>
+    <uri>{http://ccnt.cn/tcm}tcm.ZHENLIAOQK2BINGZHENGZF</uri>
+    <ontologies/>
+  </table>
+  <join id="includediagnostic" editable="false">
+    <left>
+      <join>
+        <left id="1">Subject</left>
+        <right id="2">{http://ccnt.cn/tcm}tcm.ZHENLIAOQK2BINGZHENGZF</right>
+        <constraint>
+          <column refid="ID1" father="1">ID</column>
+          <column refid="PID2" father="2">PID</column>
+          <condition>###ID1### = ###PID2###</condition>
+        </constraint>
+      </join>
+    </left>
+    <right id="3">Object</right>
+    <constraint>
+      <column refid="CID2" father="2">CID</column>
+      <column refid="ID3" father="3">ID</column>
+      <condition>###CID2### = ###ID3###</condition>
+    </constraint>
+  </join>
+  <table>
+    <uri>{http://ccnt.cn/tcm}tcm.JIUZHENTZ</uri>
+    <ontologies>
+      <ontology isMainOnto="true">
+        <ontologyURI label="就诊体征">http://cintcm.ac.cn/onto#PhysicalSign</ontologyURI>
+        <ontoProps>
+          <ontoProp>
+            <ontologyURI label="单个体征">http://cintcm.ac.cn/onto#siglesign</ontologyURI>
+            <column>DANGETZ</column>
+          </ontoProp>
+          <ontoProp>
+            <ontologyURI label="医案ID">http://cintcm.ac.cn/onto#medicaldiagnosisID</ontologyURI>
+            <column>ID</column>
+          </ontoProp>
+        </ontoProps>
+      </ontology>
+    </ontologies>
+  </table>
+  <join id="includesign" editable="false">
+    <left>
+      <join>
+        <left id="1">Subject</left>
+        <right id="2">{http://ccnt.cn/tcm}tcm.BINGZHENGZF2JIUZHENTZ</right>
+        <constraint>
+          <column refid="ID1" father="1">ID</column>
+          <column refid="PID2" father="2">PID</column>
+          <condition>###ID1### = ###PID2###</condition>
+        </constraint>
+      </join>
+    </left>
+    <right id="3">Object</right>
+    <constraint>
+      <column refid="CID2" father="2">CID</column>
+      <column refid="ID3" father="3">ID</column>
+      <condition>###CID2### = ###ID3###</condition>
+    </constraint>
+  </join>
+  <table>
+    <uri>{http://ccnt.cn/tcm}tcm.BINGZHENGZF2JIUZHENTZ</uri>
+    <ontologies/>
+  </table>
+  <table>
+    <uri>{http://ccnt.cn/tcm}tcm.JIUZHENZZ</uri>
+    <ontologies>
+      <ontology isMainOnto="true">
+        <ontologyURI label="症状">http://cintcm.ac.cn/onto#Symptom</ontologyURI>
+        <ontoProps>
+          <ontoProp>
+            <ontologyURI label="关联诊法ID">http://cintcm.ac.cn/onto#referencediagnosticid</ontologyURI>
+            <column>ID</column>
+          </ontoProp>
+        </ontoProps>
+      </ontology>
+      <ontology isMainOnto="true">
+        <ontologyURI label="就诊症状">http://cintcm.ac.cn/onto#SymptomDiagnosis</ontologyURI>
+        <ontoProps>
+          <ontoProp>
+            <ontologyURI label="诊断的症状">http://cintcm.ac.cn/onto#hasDiagnosedSymptom</ontologyURI>
+            <table>{http://ccnt.cn/tcm}tcm.JIUZHENZZ</table>
+            <joinref>hasDiagnosedSymptom</joinref>
+          </ontoProp>
+        </ontoProps>
+      </ontology>
+    </ontologies>
+  </table>
+  <table>
+    <uri>{http://ccnt.cn/tcm}tcm.BINGZHENGZF2JIUZHENZZ</uri>
+    <ontologies/>
+  </table>
+  <join id="hasDiagnosedSymptom">
+    <left id="1">Subject</left>
+    <right id="2">Object</right>
+    <constraint>
+      <column refid="ID1" father="1">ID</column>
+      <column refid="ID2" father="2">ID</column>
+      <condition>###ID1### = ###ID2###</condition>
+    </constraint>
+  </join>
+  <join id="includesymptom" editable="false">
+    <left>
+      <join>
+        <left id="1">Subject</left>
+        <right id="2">{http://ccnt.cn/tcm}tcm.BINGZHENGZF2JIUZHENZZ</right>
+        <constraint>
+          <column refid="ID1" father="1">ID</column>
+          <column refid="PID2" father="2">PID</column>
+          <condition>###ID1### = ###PID2###</condition>
+        </constraint>
+      </join>
+    </left>
+    <right id="3">Object</right>
+    <constraint>
+      <column refid="CID2" father="2">CID</column>
+      <column refid="ID3" father="3">ID</column>
+      <condition>###CID2### = ###ID3###</condition>
+    </constraint>
+  </join>
+  <table>
+    <uri>{http://ccnt.cn/tcm}tcm.ZHILIAO2ZHENJIUZL</uri>
+    <ontologies/>
+  </table>
+  <table>
+    <uri>{http://ccnt.cn/tcm}tcm.ZHENJIUZL</uri>
+    <ontologies>
+      <ontology isMainOnto="true">
+        <ontologyURI label="针灸疗法">http://cintcm.ac.cn/onto#needletherapy</ontologyURI>
+        <ontoProps>
+          <ontoProp>
+            <ontologyURI label="医案ID">http://cintcm.ac.cn/onto#consiliaid</ontologyURI>
+            <column>ID</column>
+          </ontoProp>
+          <ontoProp>
+            <ontologyURI label="针灸方法">http://cintcm.ac.cn/onto#acupuncturemethod</ontologyURI>
+            <column>ZHENJIUFF</column>
+          </ontoProp>
+          <ontoProp>
+            <ontologyURI label="针灸穴位">http://cintcm.ac.cn/onto#acupuncturepoint</ontologyURI>
+            <table>{http://ccnt.cn/tcm}tcm.ZHENJIUXW</table>
+            <joinref>acupuncturepoint</joinref>
+          </ontoProp>
+        </ontoProps>
+      </ontology>
+    </ontologies>
+  </table>
+  <join id="includeAcupunctureTherapy" editable="false">
+    <left>
+      <join>
+        <left id="1">Subject</left>
+        <right id="2">{http://ccnt.cn/tcm}tcm.ZHILIAO2ZHENJIUZL</right>
+        <constraint>
+          <column refid="ID1" father="1">ID</column>
+          <column refid="PID2" father="2">PID</column>
+          <condition>###ID1### = ###PID2###</condition>
+        </constraint>
+      </join>
+    </left>
+    <right id="3">Object</right>
+    <constraint>
+      <column refid="CID2" father="2">ID</column>
+      <column refid="ID3" father="3">ID</column>
+      <condition>###CID2### = ###ID3###</condition>
+    </constraint>
+  </join>
+  <table>
+    <uri>{http://ccnt.cn/tcm}tcm.ZHENJIUZL2ZHENJIUXW</uri>
+    <ontologies/>
+  </table>
+  <table>
+    <uri>{http://ccnt.cn/tcm}tcm.ZHENJIUXW</uri>
+    <ontologies>
+      <ontology isMainOnto="true">
+        <ontologyURI label="穴位">http://cintcm.ac.cn/onto#point</ontologyURI>
+        <ontoProps>
+          <ontoProp>
+            <ontologyURI label="概念词">http://www.w3.org/2004/02/skos/core#prefLabel</ontologyURI>
+            <column>XUEWEIMC</column>
+          </ontoProp>
+          <ontoProp>
+            <ontologyURI label="穴位关联id">http://cintcm.ac.cn/onto#pointreferenceid</ontologyURI>
+            <column>ID</column>
+          </ontoProp>
+        </ontoProps>
+      </ontology>
+    </ontologies>
+  </table>
+  <join id="acupuncturepoint" editable="false">
+    <left>
+      <join>
+        <left id="1">Subject</left>
+        <right id="2">{http://ccnt.cn/tcm}tcm.ZHENJIUZL2ZHENJIUXW</right>
+        <constraint>
+          <column refid="ID1" father="1">ID</column>
+          <column refid="PID2" father="2">PID</column>
+          <condition>###ID1### = ###PID2###</condition>
+        </constraint>
+      </join>
+    </left>
+    <right id="3">Object</right>
+    <constraint>
+      <column refid="CID2" father="2">CID</column>
+      <column refid="ID3" father="3">ID</column>
+      <condition>###CID2### = ###ID3###</condition>
+    </constraint>
+  </join>
+  <table>
+    <uri>{http://ccnt.cn/tcm}tcm.ANMOZL</uri>
+    <ontologies>
+      <ontology isMainOnto="true">
+        <ontologyURI label="按摩">http://cintcm.ac.cn/onto#massage</ontologyURI>
+        <ontoProps>
+          <ontoProp>
+            <ontologyURI label="按摩手法">http://cintcm.ac.cn/onto#massagemanipulation</ontologyURI>
+            <column>ANMOSFZC</column>
+          </ontoProp>
+          <ontoProp>
+            <ontologyURI label="医案ID">http://cintcm.ac.cn/onto#consiliaid</ontologyURI>
+            <column>ID</column>
+          </ontoProp>
+          <ontoProp>
+            <ontologyURI label="按摩穴位">http://cintcm.ac.cn/onto#massagepoint</ontologyURI>
+            <table>{http://ccnt.cn/tcm}tcm.ANMOXW</table>
+            <joinref>massagepoint</joinref>
+          </ontoProp>
+        </ontoProps>
+      </ontology>
+    </ontologies>
+  </table>
+  <table>
+    <uri>{http://ccnt.cn/tcm}tcm.ZHILIAO2ANMOZL</uri>
+    <ontologies/>
+  </table>
+  <join id="causetherpy">
+    <left id="1">Subject</left>
+    <right id="2">Object</right>
+    <constraint>
+      <column refid="ID1" father="1">ID</column>
+      <column refid="ID2" father="2">ID</column>
+      <condition>###ID1### = ###ID2###</condition>
+    </constraint>
+  </join>
+  <join id="includemassagetherapy">
+    <left id="1">Subject</left>
+    <right id="2">Object</right>
+    <constraint>
+      <column refid="ID1" father="1">ID</column>
+      <column refid="ID2" father="2">ID</column>
+      <condition>###ID1### = ###ID2###</condition>
+    </constraint>
+  </join>
+  <table>
+    <uri>{http://ccnt.cn/tcm}tcm.ANMOZL2ANMOXW</uri>
+    <ontologies/>
+  </table>
+  <table>
+    <uri>{http://ccnt.cn/tcm}tcm.ANMOXW</uri>
+    <ontologies>
+      <ontology isMainOnto="true">
+        <ontologyURI label="穴位">http://cintcm.ac.cn/onto#point</ontologyURI>
+        <ontoProps>
+          <ontoProp>
+            <ontologyURI label="穴位关联id">http://cintcm.ac.cn/onto#pointreferenceid</ontologyURI>
+            <column>ID</column>
+          </ontoProp>
+          <ontoProp>
+            <ontologyURI label="概念词">http://www.w3.org/2004/02/skos/core#prefLabel</ontologyURI>
+            <column>XUEWEIMC</column>
+          </ontoProp>
+        </ontoProps>
+      </ontology>
+    </ontologies>
+  </table>
+  <join id="massagepoint">
+    <left id="1">Subject</left>
+    <right id="2">Object</right>
+    <constraint>
+      <column refid="ID1" father="1">ID</column>
+      <column refid="ID2" father="2">ID</column>
+      <condition>###ID1### = ###ID2###</condition>
+    </constraint>
+  </join>
+  <table>
+    <uri>{http://ccnt.cn/tcm}tcm.QITAZL</uri>
+    <ontologies>
+      <ontology isMainOnto="true">
+        <ontologyURI label="其他疗法">http://cintcm.ac.cn/onto#otherTreatment</ontologyURI>
+        <ontoProps>
+          <ontoProp>
+            <ontologyURI label="治疗ID">http://cintcm.ac.cn/onto#therapyid</ontologyURI>
+            <column>ID</column>
+          </ontoProp>
+          <ontoProp>
+            <ontologyURI label="概念词">http://www.w3.org/2004/02/skos/core#prefLabel</ontologyURI>
+            <column>FANGFAMC</column>
+          </ontoProp>
+          <ontoProp>
+            <ontologyURI label="治疗描述">http://cintcm.ac.cn/onto#therapydes</ontologyURI>
+            <column>FANGFAMS</column>
+          </ontoProp>
+        </ontoProps>
+      </ontology>
+    </ontologies>
+  </table>
+  <table>
+    <uri>{http://ccnt.cn/tcm}tcm.ZHILIAO2QITAZL</uri>
+    <ontologies/>
+  </table>
+  <join id="includeothertherapy">
+    <left id="1">Subject</left>
+    <right id="2">Object</right>
+    <constraint>
+      <column refid="ID1" father="1">ID</column>
+      <column refid="ID2" father="2">ID</column>
+      <condition>###ID1### = ###ID2###</condition>
+    </constraint>
+  </join>
+  <table>
+    <uri>{http://ccnt.cn/tcm}tcm.ZHONGYAOZL</uri>
+    <ontologies>
+      <ontology isMainOnto="true">
+        <ontologyURI label="方剂疗法">http://cintcm.ac.cn/onto#formulatherapy</ontologyURI>
+        <ontoProps>
+          <ontoProp>
+            <ontologyURI label="治疗ID">http://cintcm.ac.cn/onto#therapyid</ontologyURI>
+            <column>ID</column>
+          </ontoProp>
+          <ontoProp>
+            <ontologyURI label="概念词">http://www.w3.org/2004/02/skos/core#prefLabel</ontologyURI>
+            <column>YAOFANGMC</column>
+          </ontoProp>
+        </ontoProps>
+      </ontology>
+    </ontologies>
+  </table>
+  <table>
+    <uri>{http://ccnt.cn/tcm}tcm.ZHILIAO2ZHONGYAOZL</uri>
+    <ontologies/>
+  </table>
+  <join id="includeformulatherapy">
+    <left id="1">Subject</left>
+    <right id="2">Object</right>
+    <constraint>
+      <column refid="ID1" father="1">ZHILIAOLX</column>
+      <column refid="ID2" father="2">YAOFANGMC</column>
+      <condition>###ID1### = ###ID2###</condition>
+    </constraint>
+  </join>
+  <table>
+    <uri>{http://ccnt.cn/tcm}tcm.XIYAOZL</uri>
+    <ontologies/>
+  </table>
+</tableregister>

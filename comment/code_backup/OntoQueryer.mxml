@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:local="*"
+	 fontSize='12' fontFamily="Verdana,宋体" layout="horizontal" xmlns:sparql="sparql.*">
+		<!--local:QueryPanel/-->
+		<sparql:SparqlPanel/>
+</mx:Application>

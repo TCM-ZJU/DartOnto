@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<service id="remoting-service" 
+    class="flex.messaging.services.RemotingService">
+
+    <adapters>
+        <adapter-definition id="java-object" class="flex.messaging.services.remoting.adapters.JavaAdapter" default="true"/>
+    </adapters>
+
+    <default-channels>
+        <channel ref="my-amf"/>
+    </default-channels>
+	
+	<destination id="modelController" channels="my-amf">
+		<properties>
+			<source>ontoService.RemoteModel</source>
+		</properties>
+	</destination>
+	
+	<destination id="semregController" channels="my-amf">
+		<properties>
+			<source>mappingService.SemregController</source>
+		</properties>
+	</destination>
+	
+	<destination id="dbController" channels="my-amf">
+		<properties>
+			<source>mappingService.RemoteDB</source>
+		</properties>
+	</destination>
+
+</service>

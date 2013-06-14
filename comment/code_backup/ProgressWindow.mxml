@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" width="296" height="88" creationComplete="init()"  backgroundAlpha="0.5" borderStyle="solid"
+	 borderColor="0xFFFF00" alpha="1"  >
+    <mx:Script>
+    <![CDATA[
+    	import mx.core.UIComponent;
+    	
+		private var fillColorArr:Array = new Array(0xFF9900, 0x993399, 0xFF0099, 0x6600FF, 0xFF6666, 0x00CC33, 0x33CC00, 0x993366, 0xCC66FF, 0x330099);
+		private var lineColorArr:Array = new Array(0xFFCC00, 0xFF33FF, 0xFF3366, 0x0000FF, 0xFF0000, 0x33FF00, 0x00FF00, 0xFF3366, 0xFF00FF, 0x000CCC);
+		private var childNumber:int = 6;
+    	private function drawCircle(r:Number, index:int, d:Number):void
+    	{
+    		var uic:UIComponent = new UIComponent();
+    		var child:Sprite = new Sprite();
+            child.graphics.beginFill(fillColorArr[index]);
+            child.graphics.lineStyle(2,lineColorArr[index]);
+            child.graphics.drawCircle(index * d + 10, container.height /2 + 5, r);       
+            child.graphics.endFill();
+            uic.addChild(child);
+            uic.x = index * d;
+			container.addChild(uic);	
+    	}
+    	
+    	private function init():void
+    	{	
+			var i:int = 0;
+			var radius:Number = 10;
+			for(i = 0; i < childNumber; i++){
+				drawCircle(radius, i, 30);
+			}
+			var circle:Circle = new Circle();
+			container.addChild(circle);
+			var line:Line = new Line(10, 10, 20, 20);
+			container.addChild(line);
+    	}
+		
+        
+    ]]> 
+    </mx:Script> 
+    <mx:VBox height="100%" width="100%" verticalAlign="middle">
+        <mx:Label text="Constructing Network, please warit..." fontWeight="bold"/>
+        <mx:HBox width="100%" height="36" id="container"> 	
+        </mx:HBox>
+    </mx:VBox>
+</mx:Canvas>

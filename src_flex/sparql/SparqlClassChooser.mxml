@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Panel xmlns:mx="http://www.adobe.com/2006/mxml" title="选择类型" layout="horizontal" height="100%" creationComplete="treeService.send();">
+	<mx:Metadata>
+		[Event(name="sendXML", type="dart.MyListEvent")]
+	</mx:Metadata>
+	<mx:Script>
+	<![CDATA[
+		import mx.events.ListEvent;
+		import dart.MyListEvent;
+        
+        [Embed(source="assets/ontology/class.png")] public var classIcon:Class;
+   		private function iconFun(item:Object):*{return classIcon;}  
+        
+   		private function doubleClick(evt:ListEvent):void {
+   			var node:XML = classTree.selectedItem as XML;
+   			var e:MyListEvent = new MyListEvent(MyListEvent.SEND_XML);
+            e.xml = node;
+            dispatchEvent(e);
+			this.width = 0;
+        }
+    ]]>
+    </mx:Script>
+	<mx:Tree id="classTree" dataProvider="{treeService.lastResult}" labelField="@label" iconFunction="iconFun"
+		doubleClickEnabled="true" itemDoubleClick="doubleClick(event);" height="100%" width="100%"/>
+	<mx:HTTPService id="treeService" url="./getClassTree" resultFormat="e4x" showBusyCursor="true"/>
+</mx:Panel>

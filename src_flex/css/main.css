@@ -1,0 +1,53 @@
+.chinese{fontSize:'12';fontFamily:"Verdana,宋体";}
+/*
+//----------------------------
+//  Global styles
+//----------------------------
+*/
+.global {
+    color:                  #170505;
+    fillAlphas:             1.00, 1.00; /* last pair are for OVER state */
+    fillColors: 		    #FFFFFF, #DDDDDD, #FFFFFF, #EEEEEE;
+}
+
+
+/*
+//----------------------------
+// Named styles
+//----------------------------
+*/
+.glass {
+    borderColor:		    #767473;
+    fillAlphas: 		    .60, .60, .60, .60;
+    fillColors: 		    #888888, #F3F3F3, #9E9E9E, #FCFCFC;
+    highlightAlphas:	    .07, .45;
+}
+
+.glassSlider
+{
+    fillAlphas: 		    .80, .80, .80, .80;
+    fillColors: 		    #F3F3F3, #BBBBBB, #FCFCFC, #CCCCCC;
+}
+
+.listItem
+{
+    paddingLeft:            4;
+    paddingRight:           4;
+    horizontalGap:          5;
+    verticalAlign:          "middle";
+    backgroundColor:        #FFFFFF;
+    backgroundAlpha:        .5;
+    borderStyle:            "outset";
+}
+
+.sectionHeader
+{
+    fontWeight:             "bold";
+    fontSize:               11;
+}
+
+.homeSection
+{
+    cornerRadius:           4;
+    borderStyle:            "solid";
+}

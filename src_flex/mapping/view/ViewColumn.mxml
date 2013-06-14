@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" height="60">
+	<mx:Script><![CDATA[
+		import mx.controls.TextInput;
+		import mx.collections.ArrayCollection;
+		import mx.controls.Alert;
+		import mx.utils.ArrayUtil;
+		override public function set data(value:Object):void {
+			super.data = value;
+			if (data != null) {
+				columnName = data.toString();
+				select = false;
+				var columns:XMLList = this.parentDocument.data.columns.column;
+			    for(var i:int=0; i<columns.length(); i++){
+			       	var column:XML = columns[i];
+			       	if(column.text() == columnName){
+			       		select = true;
+			       		if(column.attribute('aliasName') != undefined){
+			       			aliasName = column.attribute('aliasName');
+			       		}
+			       		break;
+			       	}
+			    }
+			}
+		}
+		private function check():void {
+			select = !select;
+			this.parentDocument.check(data,select);
+		}		
+		
+		private function setAlias():void {
+			if(alias.text)
+				aliasName = alias.text;
+			this.parentDocument.setAlias(data,alias.text);
+		}
+		[Bindable]private var columnName:String;
+		[Bindable]private var select:Boolean;
+		[Bindable]private var aliasName:String = "";
+	]]>
+	</mx:Script>
+	<mx:CheckBox id="checkBox" label="{columnName}" selected="{select}" change="check();"/>
+	<mx:HBox visible="{select}" width="100%">
+		<mx:Label text="alias:"/>
+		<mx:TextInput id="alias" text="{aliasName}" textAlign="left" keyUp="setAlias()" enter="setAlias()" width="100%"/>
+	</mx:HBox>
+</mx:VBox>

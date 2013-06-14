@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" width="300" height="400" layout="vertical">
+    <mx:Script>
+    <![CDATA[
+		import mx.controls.Alert;
+		import mx.managers.PopUpManager;
+		
+		// Event handler for the OK button.
+		private function returnName():void {
+           	if(	localName.text == null || localName.text == "" ||
+           		ip.text == null || ip.text == "" ||
+           		port.text == null || port.text == "" ||
+           		user.text == null || user.text == "" ||
+           		pwd.text == null || pwd.text == "" ||
+           		type.text == null || type.text == ""){
+           		Alert.show("请完整添入信息","提示");
+           		return;
+           	}
+           	if(	localName.text.indexOf(" ") >= 0 || 
+           		ip.text.indexOf(" ") >= 0 ||
+           		port.text.indexOf(" ") >= 0 ||
+           		user.text.indexOf(" ") >= 0 ||
+           		pwd.text.indexOf(" ") >= 0 ||
+           		type.text.indexOf(" ") >= 0){
+           		Alert.show("信息内容不能含有空格","提示");
+           		return;
+           	}
+         	dispatchEvent(new Event("ok_click"));
+        }
+    ]]>
+    </mx:Script>
+	<mx:Form width="100%" height="100%">
+		<mx:FormHeading label="请录入数据库信息" />
+		<mx:FormItem label="名称">
+			<mx:TextInput id="localName" width="100%"/>
+		</mx:FormItem>
+		<mx:FormItem label="URL">
+			<mx:TextInput id="ip" width="100%"/>
+		</mx:FormItem>
+		<mx:FormItem label="Port">
+			<mx:TextInput id="port" width="100%"/>
+		</mx:FormItem>
+		<mx:FormItem label="服务名">
+			<mx:TextInput id="serviceName" width="100%"/>
+		</mx:FormItem>
+		<mx:FormItem label="用户名">
+			<mx:TextInput id="user" width="100%"/>
+		</mx:FormItem>
+		<mx:FormItem label="密码">
+			<mx:TextInput id="pwd" width="100%"/>
+		</mx:FormItem>
+		<mx:FormItem label="类型">
+			<mx:TextInput id="type" width="100%"/>
+		</mx:FormItem>
+	</mx:Form>
+	<mx:HBox>
+		<mx:Button label="OK" click="returnName();"/>
+		<mx:Button label="Cancel" click="PopUpManager.removePopUp(this);"/>
+	</mx:HBox>
+</mx:TitleWindow>

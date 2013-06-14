@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Panel xmlns:mx="http://www.adobe.com/2006/mxml" layout="vertical" width="100%" height="100%" title="属性列表">
+	<mx:Script> 
+	<![CDATA[		
+		import mx.utils.ArrayUtil;
+		import mx.controls.Tree;
+		import mx.events.DragEvent;
+		import mx.core.DragSource;
+		import mx.core.UIComponent;
+		import mx.managers.DragManager;
+		import mx.controls.listClasses.ListBase;
+		import mx.collections.ArrayCollection;
+		import mx.collections.XMLListCollection;
+		import dart.mapping.PropThumbEvent;		
+		
+		[Bindable]
+		public var proData:XMLListCollection;
+		
+        private function onDragEnter(event:DragEvent): void {
+        	if(event.dragInitiator is Tree){
+        		var ds:DragSource = event.dragSource;
+        		if(!ds.hasFormat("treeItems")) return;// no useful data
+        		var items:Array = ds.dataForFormat("treeItems") as Array;
+        		for(var i:Number=0; i < items.length; i++){
+        			var item:XML = XML(items[i]);
+        			if( item.localName() != "property" && item.localName() != "relation") return; // not what we want
+        		}
+        	}
+        	// If the Tree control passes or the dragInitiator is not a Tree control,  accept the drop.
+        	DragManager.acceptDragDrop(UIComponent(event.currentTarget));
+        }
+        private function onDragOver(event:DragEvent): void {
+        	if(event.dragInitiator is Tree)
+        		DragManager.showFeedback(DragManager.COPY);
+        	else
+        		DragManager.showFeedback(DragManager.NONE);
+        }
+        private function onDragExit(event:DragEvent): void {
+        	var dropTarget:ListBase = ListBase(event.currentTarget);
+        	dropTarget.hideDropFeedback(event);
+        }
+        private function onTilesDragDrop(event:DragEvent): void {
+        	var ds:DragSource = event.dragSource;
+        	var dropTarget:TileList = TileList(event.currentTarget);
+        	var arr:Array;
+        	if(ds.hasFormat("items")) {
+        		arr = ds.dataForFormat("items") as Array;
+        	} else if(ds.hasFormat("treeItems")) {
+        		arr = ds.dataForFormat("treeItems") as Array;
+        	}
+        	for(var i:Number=0; i < arr.length; i++) {
+        		var node:XML = XML(arr[i]);
+        		dispatchEvent(new PropThumbEvent(PropThumbEvent.ADD, node));	
+        	}
+        	onDragExit(event);
+        }
+
+	]]>
+	</mx:Script>
+	<mx:TileList id="propertys" width="100%" height="100%"
+		dataProvider="{proData}" itemRenderer="mapping.PropertyThumbnail" columnWidth="200" rowHeight="120"         
+        dragEnter="onDragEnter(event)" dragOver="onDragOver(event)" dragDrop="onTilesDragDrop(event)" dragExit="onDragExit(event)"/>
+</mx:Panel>

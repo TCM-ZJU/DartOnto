@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<resregister>
+   <dbResInfo>
+    <dbResQname>
+      <namespace>http://ccnt.cn/tcm</namespace>
+      <localpart>conceptchoir</localpart>
+      <label>中医药学语言系统</label>
+    </dbResQname>
+    <localDbResType dbType="Oracle" canBeTempDb="true">
+      <jdbcUrl>jdbc:oracle:thin:@(DESCRIPTION =
+    (ADDRESS = (PROTOCOL = TCP)(HOST = 192.168.200.68)(PORT = 1521))
+    (ADDRESS = (PROTOCOL = TCP)(HOST = 192.168.200.69)(PORT = 1521))
+    (ADDRESS = (PROTOCOL = TCP)(HOST = 192.168.200.72)(PORT = 1521))
+    (ADDRESS = (PROTOCOL = TCP)(HOST = 192.168.200.73)(PORT = 1521))
+    (LOAD_BALANCE = yes)
+    (FAILOVER = ON)
+    (CONNECT_DATA =
+      (SERVER = DEDICATED)
+      (SERVICE_NAME = condb)
+      (FAILOVER_MODE =
+        (TYPE = SELECT)
+        (METHOD = BASIC)
+        (RETRIES = 30)
+        (DELAY = 5)
+      )
+    )
+  )</jdbcUrl>
+      <jdbcDriver>oracle.jdbc.driver.OracleDriver</jdbcDriver>
+      <jdbcUser>conceptchoir</jdbcUser>
+      <jdbcPwd>conceptchoir5801</jdbcPwd>
+    </localDbResType>
+    <tableNameFilter>
+      <regex>CONCEPTCHOIR\.(.*)</regex>
+      <exclude>(.*)BIN[$](.*)</exclude>
+      <exclude>(.*)DR[$](.*)[$]I</exclude>
+    </tableNameFilter>
+  </dbResInfo>
+  
+  <dbResInfo>
+    <dbResQname>
+      <namespace>http://ccnt.cn/tcm</namespace>
+      <localpart>snomed</localpart>
+      <label>中医临床术语集</label>
+    </dbResQname>
+    <localDbResType dbType="Oracle" canBeTempDb="true">
+      <jdbcUrl>jdbc:oracle:thin:@(DESCRIPTION =
+    (ADDRESS = (PROTOCOL = TCP)(HOST = 192.168.200.68)(PORT = 1521))
+    (ADDRESS = (PROTOCOL = TCP)(HOST = 192.168.200.69)(PORT = 1521))
+    (ADDRESS = (PROTOCOL = TCP)(HOST = 192.168.200.72)(PORT = 1521))
+    (ADDRESS = (PROTOCOL = TCP)(HOST = 192.168.200.73)(PORT = 1521))
+    (LOAD_BALANCE = yes)
+    (FAILOVER = ON)
+    (CONNECT_DATA =
+      (SERVER = DEDICATED)
+      (SERVICE_NAME = condb)
+      (FAILOVER_MODE =
+        (TYPE = SELECT)
+        (METHOD = BASIC)
+        (RETRIES = 30)
+        (DELAY = 5)
+      )
+    )
+  )</jdbcUrl>
+      <jdbcDriver>oracle.jdbc.driver.OracleDriver</jdbcDriver>
+      <jdbcUser>snomed</jdbcUser>
+      <jdbcPwd>snomed5801@condb</jdbcPwd>
+    </localDbResType>
+    <tableNameFilter>
+      <regex>SNOMED\.(.*)</regex>
+      <exclude>(.*)BIN[$](.*)</exclude>
+    </tableNameFilter>
+  </dbResInfo>
+  
+  <dbResInfo>
+    <dbResQname>
+      <namespace>http://ccnt.cn/tcm</namespace>
+      <localpart>wx</localpart>
+      <label>中医药学主题词表</label>
+    </dbResQname>
+    <localDbResType dbType="Oracle" tempTableSpace="null">
+      <jdbcUrl>jdbc:oracle:thin:@192.168.200.74:1521:SHRDB1</jdbcUrl>
+      <jdbcDriver>oracle.jdbc.driver.OracleDriver</jdbcDriver>
+      <jdbcUser>wx</jdbcUser>
+      <jdbcPwd>wx5803</jdbcPwd>
+    </localDbResType>
+    <tableNameFilter>
+      <regex>WX\.ZTC0</regex>
+      <regex>WX\.ZTC_RKC</regex>
+    </tableNameFilter>
+  </dbResInfo>
+  
+  <dbResInfo>
+    <dbResQname>
+      <namespace>http://ccnt.cn/tcm</namespace>
+      <localpart>semantic_net</localpart>
+      <label>中医药学名词</label>
+    </dbResQname>
+    <localDbResType dbType="Oracle" canBeTempDb="true" >
+      <jdbcUrl>jdbc:oracle:thin:@192.168.200.74:1521:SHRDB1</jdbcUrl>
+      <jdbcDriver>oracle.jdbc.driver.OracleDriver</jdbcDriver>
+      <jdbcUser>semantic_net</jdbcUser>
+      <jdbcPwd>semantic_net5803</jdbcPwd>
+    </localDbResType>
+    <tableNameFilter>
+      <regex>SEMANTIC_NET\.PHARMIC</regex>
+    </tableNameFilter>
+  </dbResInfo>
+  
+  <dbResInfo>
+    <dbResQname>
+      <namespace>http://ccnt.cn/tcm</namespace>
+      <localpart>tcm_disease</localpart>
+      <label>中医药疾病专题数据库</label>
+    </dbResQname>
+    <localDbResType dbType="Oracle" canBeTempDb="true">
+      <jdbcUrl>jdbc:oracle:thin:@(DESCRIPTION =
+    (ADDRESS = (PROTOCOL = TCP)(HOST = 192.168.200.72)(PORT = 1521))
+    (ADDRESS = (PROTOCOL = TCP)(HOST = 192.168.200.73)(PORT = 1521))
+    (LOAD_BALANCE = yes)
+    (failover = on)
+    (CONNECT_DATA =
+      (SERVER = DEDICATED)
+      (SERVICE_NAME = condb)
+      (failover_mode =
+        (type = select)
+        (method = basic)
+        (retries = 50)
+        (delay = 3)
+      )
+    )
+  )</jdbcUrl>
+      <jdbcDriver>oracle.jdbc.driver.OracleDriver</jdbcDriver>
+      <jdbcUser>tcm_disease</jdbcUser>      
+      <jdbcPwd>tcm_disease@condb</jdbcPwd>
+    </localDbResType>
+    <tableNameFilter>
+      <regex>TCM_DISEASE\.(.*)</regex>
+      <exclude>(.*)[$](.*)</exclude>
+    </tableNameFilter>
+  </dbResInfo>
+  
+  <dbResInfo>
+    <dbResQname>
+      <namespace>http://ccnt.cn/tcm</namespace>
+      <localpart>tcd_baschem</localpart>
+      <label>中医药中药基础数据库</label>
+    </dbResQname>
+    <localDbResType dbType="Oracle" canBeTempDb="true">
+      <jdbcUrl>jdbc:oracle:thin:@(DESCRIPTION =
+    (ADDRESS = (PROTOCOL = TCP)(HOST = 192.168.200.74)(PORT = 1521))
+    (ADDRESS = (PROTOCOL = TCP)(HOST = 192.168.200.75)(PORT = 1521))
+    (LOAD_BALANCE = yes)
+    (failover = on)
+    (CONNECT_DATA =
+      (SERVER = DEDICATED)
+      (SERVICE_NAME = shrdb)
+      (failover_mode =
+        (type = select)
+        (method = basic)
+        (retries = 50)
+        (delay = 3)
+      )
+    )
+  )</jdbcUrl>
+      <jdbcDriver>oracle.jdbc.driver.OracleDriver</jdbcDriver>
+      <jdbcUser>tcd_baschem</jdbcUser>
+      <jdbcPwd>tcd_baschem@condb</jdbcPwd>
+    </localDbResType>
+    <tableNameFilter>
+      <regex>TCD_BASCHEM\.(.*)</regex>
+      <exclude>(.*)[$](.*)</exclude>
+    </tableNameFilter>
+  </dbResInfo>
+</resregister>

@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<tableregister>
+  <view>
+    <uri>{http://ccnt.cn/tcm}mt.PREFTERM</uri>
+    <tables>
+      <table id="term">
+        <uri>{http://ccnt.cn/tcm}mt.T_TERM</uri>
+        <columns>
+          <column>TERM_LABEL</column>
+          <column>CONCEPT_ID</column>
+        </columns>
+      </table>
+    </tables>
+    <view_constraint>
+      <left type="column">term.LAN_PREFERRED</left>
+      <right type="int">0</right>
+      <opertype>1</opertype>
+    </view_constraint>
+  </view>
+  <view>
+    <uri>{http://ccnt.cn/tcm}mt.ALTTERM</uri>
+    <tables>
+      <table id="term">
+        <uri>{http://ccnt.cn/tcm}mt.T_TERM</uri>
+        <columns>
+          <column>TERM_LABEL</column>
+          <column>CONCEPT_ID</column>
+        </columns>
+      </table>
+    </tables>
+    <view_constraint>
+      <left type="column">term.LAN_PREFERRED</left>
+      <right type="int">1</right>
+      <opertype>1</opertype>
+    </view_constraint>
+  </view>
+  <view>
+    <uri>{http://ccnt.cn/tcm}mt.TCMLSVIEW</uri>
+    <ontologies>
+      <ontology isMainOnto="true" uritype="2" uricol="http://www.w3.org/2004/02/skos/core#prefLabel">
+        <ontologyURI label="事物">http://www.w3.org/2004/02/skos/core#Concept</ontologyURI>
+        <ontoProps>
+          <ontoProp>
+            <ontologyURI label="概念词">http://www.w3.org/2004/02/skos/core#prefLabel</ontologyURI>
+            <column>PREFLABEL</column>
+          </ontoProp>
+          <ontoProp>
+            <ontologyURI label="异名">http://www.w3.org/2004/02/skos/core#altLabel</ontologyURI>
+            <column>ALTLABEL</column>
+          </ontoProp>
+          <ontoProp>
+            <ontologyURI label="定义">http://www.w3.org/2004/02/skos/core#definition</ontologyURI>
+            <column>DEFINITION</column>
+          </ontoProp>
+          <ontoProp>
+            <ontologyURI label="上位词">http://www.w3.org/2004/02/skos/core#broader</ontologyURI>
+            <table>{http://ccnt.cn/tcm}mt.TCMLSVIEW</table>
+            <joinref>broader</joinref>
+          </ontoProp>
+          <ontoProp>
+            <ontologyURI label="下位词">http://www.w3.org/2004/02/skos/core#narrower</ontologyURI>
+            <table>{http://ccnt.cn/tcm}mt.TCMLSVIEW</table>
+            <joinref>narrower</joinref>
+          </ontoProp>
+          <ontoProp>
+            <ontologyURI label="有关联关系是">http://cintcm.ac.cn/onto#hasRela</ontologyURI>
+            <table>{http://ccnt.cn/tcm}mt.T_ASSOCIATIVE_RELS</table>
+            <joinref>hasRela</joinref>
+          </ontoProp>
+        </ontoProps>
+      </ontology>
+    </ontologies>
+    <tables>
+      <table id="concept">
+        <uri>{http://ccnt.cn/tcm}mt.T_CONCEPT</uri>
+        <columns>
+          <column>ID</column>
+        </columns>
+      </table>
+      <table id="pref">
+        <uri>{http://ccnt.cn/tcm}mt.PREFTERM</uri>
+        <columns>
+          <column aliasName="PREFLABEL">TERM_LABEL</column>
+        </columns>
+      </table>
+      <table id="alt">
+        <uri>{http://ccnt.cn/tcm}mt.ALTTERM</uri>
+        <columns>
+          <column aliasName="ALTLABEL">TERM_LABEL</column>
+        </columns>
+      </table>
+      <table id="definition">
+        <uri>{http://ccnt.cn/tcm}mt.T_UR_1024</uri>
+        <columns>
+          <column aliasName="DEFINITION">F_1025</column>
+        </columns>
+      </table>
+    </tables>
+    <join>
+      <left id="1">concept</left>
+      <right id="2">pref</right>
+      <constraint>
+        <column refid="ID" father="1">ID</column>
+        <column refid="ConceptID" father="2">CONCEPT_ID</column>
+        <condition>###ID### = ###ConceptID###</condition>
+      </constraint>
+    </join>
+    <join>
+      <left id="1">concept</left>
+      <right id="2">alt</right>
+      <constraint>
+        <column refid="ID" father="1">ID</column>
+        <column refid="ConceptID" father="2">CONCEPT_ID</column>
+        <condition>###ID### = ###ConceptID###</condition>
+      </constraint>
+    </join>
+    <join>
+      <left id="1">concept</left>
+      <right id="2">definition</right>
+      <constraint>
+        <column refid="ID" father="1">ID</column>
+        <column refid="IndexedBy" father="2">F_MASTER_ID</column>
+        <condition>###ID### = ###IndexedBy###</condition>
+      </constraint>
+    </join>
+  </view>
+  <table>
+    <uri>{http://ccnt.cn/tcm}mt.T_CONCEPT_RELS</uri>
+    <ontologies/>
+  </table>
+  <join id="broader">
+    <left>
+      <join>
+        <left id="1">Subject</left>
+        <right id="2">{http://ccnt.cn/tcm}mt.T_CONCEPT_RELS</right>
+        <constraint>
+          <column refid="ID" father="1">ID</column>
+          <column refid="ChildID" father="2">CHILD_ID</column>
+          <condition>###ID### = ###ChildID###</condition>
+        </constraint>
+      </join>
+    </left>
+    <right id="3">Object</right>
+    <constraint>
+      <column refid="ParentID" father="2">PARENT_ID</column>
+      <column refid="ID" father="3">ID</column>
+      <condition>###ParentID### = ###ID###</condition>
+    </constraint>
+  </join>
+  <join id="narrower">
+    <left>
+      <join>
+        <left id="1">Subject</left>
+        <right id="2">{http://ccnt.cn/tcm}mt.T_CONCEPT_RELS</right>
+        <constraint>
+          <column refid="ID" father="1">ID</column>
+          <column refid="ParentID" father="2">PARENT_ID</column>
+          <condition>###ID### = ###ParentID###</condition>
+        </constraint>
+      </join>
+    </left>
+    <right id="3">Object</right>
+    <constraint>
+      <column refid="ChildID" father="2">CHILD_ID</column>
+      <column refid="ID" father="3">ID</column>
+      <condition>###ChildID### = ###ID###</condition>
+    </constraint>
+  </join>
+  <join id="hasRela">
+    <right id="2">Object</right>
+    <left id="1">Subject</left>
+    <constraint>
+      <column refid="ID1" father="1">ID</column>
+      <column refid="ID2" father="2">LEFT_CONC_ID</column>
+      <condition>###ID1### = ###ID2###</condition>
+    </constraint>
+  </join>
+  <view>
+    <uri>{http://ccnt.cn/tcm}mt.RELAVIEW</uri>
+    <ontologies>
+      <ontology isMainOnto="true" uritype="2" uricol="http://cintcm.ac.cn/onto#relaname">
+        <ontologyURI label="关联关系">http://cintcm.ac.cn/onto#Relation</ontologyURI>
+        <ontoProps>
+          <ontoProp>
+            <ontologyURI label="显示关联关系">http://cintcm.ac.cn/onto#relaname</ontologyURI>
+            <column>F_DESCRIPTION</column>
+          </ontoProp>
+          <ontoProp>
+            <ontologyURI label="有关联词是">http://cintcm.ac.cn/onto#relaConcept</ontologyURI>
+            <table>{http://ccnt.cn/tcm}mt.TCMLSVIEW</table>
+            <joinref>relaConcept</joinref>
+          </ontoProp>
+        </ontoProps>
+      </ontology>
+    </ontologies>
+    <tables>
+      <table id="rel">
+        <uri>{http://ccnt.cn/tcm}mt.T_ASSOCIATIVE_RELS</uri>
+        <columns>
+          <column>LEFT_CONC_ID</column>
+          <column>RIGHT_CONC_ID</column>
+        </columns>
+      </table>
+      <table id="type">
+        <uri>{http://ccnt.cn/tcm}mt.T_CL_25</uri>
+        <columns>
+          <column>F_DESCRIPTION</column>
+        </columns>
+      </table>
+    </tables>
+    <join>
+      <left id="1">rel</left>
+      <right id="2">type</right>
+      <constraint>
+        <column refid="ID1" father="1">TYPE</column>
+        <column refid="ID2" father="2">F_ITEM_ID</column>
+        <condition>###ID1### = ###ID2###</condition>
+      </constraint>
+    </join>
+  </view>
+  <join id="relaConcept">
+    <right id="2">Object</right>
+    <left id="1">Subject</left>
+    <constraint>
+      <column refid="ID1" father="1">RIGHT_CONC_ID</column>
+      <column refid="ID2" father="2">ID</column>
+      <condition>###ID1### = ###ID2###</condition>
+    </constraint>
+  </join>
+</tableregister>

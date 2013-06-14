@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<tableregister>
+  <view>
+    <uri>{http://ccnt.cn/tcm}tcmct.TCMCTVIEW</uri>
+    <ontologies>
+      <ontology isMainOnto="true" uritype="2" uricol="http://www.w3.org/2004/02/skos/core#prefLabel">
+        <ontologyURI label="事物">http://www.w3.org/2004/02/skos/core#Concept</ontologyURI>
+        <ontoProps>
+          <ontoProp>
+            <ontologyURI label="概念词">http://www.w3.org/2004/02/skos/core#prefLabel</ontologyURI>
+            <column>CONCEPT</column>
+          </ontoProp>
+          <ontoProp>
+            <ontologyURI label="异名">http://www.w3.org/2004/02/skos/core#altLabel</ontologyURI>
+            <column>ALIAS</column>
+          </ontoProp>
+          <ontoProp>
+            <ontologyURI label="定义">http://www.w3.org/2004/02/skos/core#definition</ontologyURI>
+            <column>DEFINITION</column>
+          </ontoProp>
+          <ontoProp>
+            <ontologyURI label="上位词">http://www.w3.org/2004/02/skos/core#broader</ontologyURI>
+            <table>{http://ccnt.cn/tcm}tcmct.TCMCTVIEW</table>
+            <joinref>broader</joinref>
+          </ontoProp>
+          <ontoProp>
+            <ontologyURI label="下位词">http://www.w3.org/2004/02/skos/core#narrower</ontologyURI>
+            <table>{http://ccnt.cn/tcm}tcmct.TCMCTVIEW</table>
+            <joinref>narrower</joinref>
+          </ontoProp>
+          <ontoProp>
+            <ontologyURI label="描述">http://cintcm.ac.cn/onto#Description</ontologyURI>
+            <column>CONCEPT</column>
+          </ontoProp>
+        </ontoProps>
+      </ontology>
+    </ontologies>
+    <tables>
+      <table id="tcm">
+        <uri>{http://ccnt.cn/tcm}tcmct.TCM</uri>
+        <columns>
+          <column>CONCEPT</column>
+          <column>ID</column>
+          <column>PARENTID</column>
+        </columns>
+      </table>
+      <table id="alias">
+        <uri>{http://ccnt.cn/tcm}tcmct.ALIAS</uri>
+        <columns>
+          <column>ALIAS</column>
+        </columns>
+      </table>
+      <table id="definition">
+        <uri>{http://ccnt.cn/tcm}tcmct.DEFINITION</uri>
+        <columns>
+          <column>DEFINITION</column>
+        </columns>
+      </table>
+    </tables>
+    <join>
+      <left id="1">tcm</left>
+      <right id="2">alias</right>
+      <constraint>
+        <column refid="ID" father="1">ID</column>
+        <column refid="IndexedBy" father="2">INDEXEDBY</column>
+        <condition>###ID### = ###IndexedBy###</condition>
+      </constraint>
+    </join>
+    <join>
+      <left id="1">tcm</left>
+      <right id="2">definition</right>
+      <constraint>
+        <column refid="ID" father="1">ID</column>
+        <column refid="IndexedBy" father="2">INDEXEDBY</column>
+        <condition>###ID### = ###IndexedBy###</condition>
+      </constraint>
+    </join>
+    <view_constraint>
+      <left type="column">tcm.TYPE</left>
+      <right type="int">0</right>
+      <opertype>1</opertype>
+    </view_constraint>
+  </view>
+  <join id="broader">
+    <left id="1">Subject</left>
+    <right id="2">Object</right>
+    <constraint>
+      <column refid="parentID" father="1">PARENTID</column>
+      <column refid="ID" father="2">ID</column>
+      <condition>###parentID### = ###ID###</condition>
+    </constraint>
+  </join>
+  <join id="narrower">
+    <left id="1">Subject</left>
+    <right id="2">Object</right>
+    <constraint>
+      <column refid="ID" father="1">ID</column>
+      <column refid="parentID" father="2">PARENTID</column>
+      <condition>###parentID### = ###ID###</condition>
+    </constraint>
+  </join>
+  <table>
+    <uri>{http://ccnt.cn/tcm}tcmct.RELATEDTCMLS</uri>
+    <ontologies/>
+  </table>
+</tableregister>

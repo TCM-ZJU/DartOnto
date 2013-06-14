@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" width="400" height="200" creationComplete="init()" xmlns:joinTable="mapping.joinTable.*">
+	<mx:Script>
+    <![CDATA[
+    	import dart.mapping.JoinParser;
+    	import mx.collections.ArrayCollection;
+		import mx.controls.Alert;
+		import mx.utils.ArrayUtil;
+		import mx.rpc.events.ResultEvent;
+		import mx.managers.PopUpManager;
+    	import mapping.TableEditor;
+		public var tableEditor:TableEditor;
+		
+		public var action:String;
+		public var join:XML;
+		public var subjectTableUri:String;		
+		public var objectTableUri:String;
+		
+		private function init():void {
+			subjectLabel.text=getTableLabel(subjectTableUri);
+			objectLabel.text =getTableLabel(objectTableUri);
+			
+			subjectColumns.tableUri=subjectTableUri;
+			objectColumns.tableUri =objectTableUri;
+			
+			if(action=='edit'){
+				joinid.text = join.@id;
+				var joinParser:JoinParser = new JoinParser(join);
+				var tableArray:ArrayCollection = joinParser.parse();
+				subjectColumns.column = tableArray.getItemAt(0)['right'].toString();
+				objectColumns.column  = tableArray.getItemAt(tableArray.length-1)['left'].toString();
+				for(var i:int=1; i<tableArray.length-1; i++) {
+					insertTable(tableArray.getItemAt(i));
+				}
+			}
+	    }
+		private function returnContent():void {
+			var joinArray:ArrayCollection = new ArrayCollection();
+			if(subjectColumns.selectedIndex == -1 || objectColumns.selectedIndex == -1){
+				Alert.show("请完整添入信息","提示");return;}
+			var table:Object = new Object();
+			table['uri']='Subject';
+			table['right']=subjectColumns.selectedItem;
+			joinArray.addItem(table);
+			var tables:Array = innerTables.getChildren();
+			for(var i:int=0;i<tables.length;i++){
+				var innerTable:InnerTable = tables[i] as InnerTable;
+				if(!innerTable.isLegal()){
+					Alert.show("请完整添入信息","提示");return;}
+				table = new Object();
+				table['uri']=innerTable.table.selectedItem.toString();
+				table['left']=innerTable.left.selectedItem;
+				table['right']=innerTable.right.selectedItem;
+				joinArray.addItem(table);
+			}
+			table = new Object();
+           	table['uri']='Object';
+			table['left']=objectColumns.selectedItem;
+			joinArray.addItem(table);
+			join = JoinParser.reParse(joinArray,joinid.text);
+         	dispatchEvent(new Event("ok_click"));
+        }
+        private function getTableLabel(tableUri:String):String{
+        	return tableUri.substr(tableUri.lastIndexOf('.')+1);
+        }
+        private function insertTable(obj:Object):void {
+        	this.width += 280;
+        	var innerTable:InnerTable = new InnerTable();
+			innerTables.addChild(innerTable);
+			innerTable.data = obj;
+        }
+        private function removeTable():void {
+        	this.width = 400;
+			innerTables.removeAllChildren();
+        }
+    ]]>
+    </mx:Script>
+    <mx:VBox width="100%" height="100%">
+    	<mx:TextInput id="joinid" fontWeight="bold" keyUp="{action='new';}"/>
+    	<mx:HBox width="100%" height="100%" horizontalAlign="center">
+    		<mx:VBox id="subjectTable">
+    			<mx:Label id="subjectLabel" height="28" fontWeight="bold"/>
+    			<joinTable:TableColumn id="subjectColumns"/>
+    		</mx:VBox>
+    		<mx:HBox id="innerTables"/>
+    		<mx:VBox id="objectTable">
+    			<mx:Label id="objectLabel" height="28" fontWeight="bold"/>
+    			<joinTable:TableColumn id="objectColumns"/>
+    		</mx:VBox>
+		</mx:HBox>
+			<mx:HBox width="100%">
+			<mx:VBox>
+				<mx:Button label="InsertTable" click="insertTable(new Object())"/>
+				<mx:Button label="RemoveAllTable" click="removeTable()"/>
+			</mx:VBox>
+			<mx:Spacer width="100%"/>
+			<mx:Button label="OK" click="returnContent();"/>
+			<mx:Button label="Cancel" click="PopUpManager.removePopUp(this);"/>
+		</mx:HBox>
+    </mx:VBox>
+</mx:TitleWindow>

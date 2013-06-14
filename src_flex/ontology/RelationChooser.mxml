@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" title="Relation Chooser" layout="vertical" width="300" height="600" creationComplete="getRelationTreeService.send();">
+	<mx:Script>
+	<![CDATA[
+		import mx.controls.Alert;
+		import mx.rpc.events.ResultEvent;
+		import mx.managers.PopUpManager;
+        
+        [Embed(source="assets/ontology/relation.png")] public var relaIcon:Class;
+        [Embed(source="assets/ontology/completeRelation.png")] public var completeIcon:Class;
+   		private function iconFun(item:Object):*{
+   			var xml:XML = item as XML;
+   			if(addRelation && xml.attribute("hasDomain") == true)
+   				return completeIcon;
+   			return relaIcon;
+   		}
+   		
+   		[Bindable]
+   		public var addRelation:Boolean = false;
+		public var preLabel:String;
+		public var uri:String;
+		public var objLabel:String;
+		public var objUri:String = null;
+		private function returnParent():void {
+           	if(relationTree.selectedIndex<0){
+           		Alert.show("请选择关联","提示");
+           		return;
+           	}
+			var select:XML = relationTree.selectedItem as XML;
+			if(addRelation && select.attribute("hasDomain") == true){
+				Alert.show("该关联已有主语，请创建或选择其他关联","提示");
+           		return;
+			}
+			preLabel = select.@label;
+			uri = select.@uri;
+			objLabel = select.@rangeLabel;
+			objUri = select.@range;
+         	dispatchEvent(new Event("ok_click"));
+        }
+    ]]>
+    </mx:Script>
+	<mx:Tree id="relationTree" dataProvider="{getRelationTreeService.lastResult}" labelField="@label" iconFunction="iconFun"		
+		width="100%" height="100%"/>
+	<mx:HBox>
+		<mx:Button label="OK" click="returnParent();"/>
+		<mx:Button label="Cancel" click="PopUpManager.removePopUp(this);"/>
+	</mx:HBox>
+	<mx:HTTPService id="getRelationTreeService" url="./getRelationTree" resultFormat="e4x"/>
+</mx:TitleWindow>

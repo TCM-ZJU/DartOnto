@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<tableregister>
+  <table>
+    <uri>{http://ccnt.cn/tcm}semantic_net.PHARMIC</uri>
+    <ontologies>
+      <ontology isMainOnto="true" uritype="2" uricol="http://www.w3.org/2004/02/skos/core#prefLabel">
+        <ontologyURI label="事物">http://www.w3.org/2004/02/skos/core#Concept</ontologyURI>
+        <ontoProps>
+          <ontoProp>
+            <ontologyURI label="概念词">http://www.w3.org/2004/02/skos/core#prefLabel</ontologyURI>
+            <column>CONCEPT</column>
+          </ontoProp>
+          <ontoProp>
+            <ontologyURI label="异名">http://www.w3.org/2004/02/skos/core#altLabel</ontologyURI>
+            <column>ENGLISH</column>
+          </ontoProp>
+          <ontoProp>
+            <ontologyURI label="异名">http://www.w3.org/2004/02/skos/core#altLabel</ontologyURI>
+            <column>LATIN</column>
+          </ontoProp>
+          <ontoProp>
+            <ontologyURI label="定义">http://www.w3.org/2004/02/skos/core#definition</ontologyURI>
+            <column>DEF</column>
+          </ontoProp>
+        </ontoProps>
+      </ontology>
+    </ontologies>
+  </table>
+</tableregister>

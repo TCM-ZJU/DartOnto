@@ -1,0 +1,6 @@
+10.214.0.144
+远程登录：勾选 本体资源-->磁盘驱动器
+Administrator:remote@ccnt609
+黏贴复制
+F:\Program Files\Apache Software Foundation\Tomcat 5.5
+关掉tomcat窗口，打开bin中的tomcat admin:admin

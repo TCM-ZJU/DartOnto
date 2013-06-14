@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:local="*"
+	 label="本体编辑器" width="100%" height="100%" creationComplete="loadXML()" xmlns:ontology="ontology.*">
+	<mx:Script>
+	<![CDATA[
+		import mapping.ClassSchema;
+		import mx.controls.Tree;
+		import mx.collections.XMLListCollection;
+		import mx.rpc.events.ResultEvent;
+		import mx.controls.Alert;
+        
+		[Bindable]
+		private var classData:XMLList;
+        private function classServiceResultHandler(event:Event):void {
+            var classes:XML = new XML(event.target.data);
+         	classData = new XMLList(classes);
+        }        
+        public function loadXML():void {
+        	var ur:URLRequest = new URLRequest("./getClassTree");
+        	var ul:URLLoader = new URLLoader(ur);
+        	ul.addEventListener(Event.COMPLETE, classServiceResultHandler);
+        	this.parentDocument.mapping.classSchema.getTreeService.send();
+        }
+        ]]>
+    </mx:Script>
+    <ontology:ClassBrowser classData="{classData}" sendXML="classEditor.getDetail(event.xml)" />
+    <ontology:ClassEditor id="classEditor" />
+</mx:HBox>

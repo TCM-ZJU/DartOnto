@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resregister>  
+  <dbResInfo>
+    <dbResQname>
+      <namespace>http://ccnt.cn/mt</namespace>
+      <localpart>tempdb</localpart>
+    </dbResQname>
+    <localDbResType dbType="Oracle" tempTableSpace="null">
+      <jdbcUrl>jdbc:oracle:thin:@10.214.33.111:1521:MT</jdbcUrl>
+      <jdbcDriver>oracle.jdbc.driver.OracleDriver</jdbcDriver>
+      <jdbcUser>tcmls</jdbcUser>
+      <jdbcPwd>tcmls</jdbcPwd>
+    </localDbResType>
+   <tableNameFilter>
+      <regex>tcmls(.*)</regex>
+    </tableNameFilter> 
+  </dbResInfo>
+</resregister>

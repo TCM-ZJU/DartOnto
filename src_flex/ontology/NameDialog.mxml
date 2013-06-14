@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" layout="vertical" width="330" height="330" title="请输入内容" close="objectVisible=false">
+    <mx:Script>
+    <![CDATA[
+		import mx.controls.Alert;
+		import mx.managers.PopUpManager;
+		
+		// Event handler for the OK button.
+		private function returnName():void {
+        	//TODO 检查重名，包括localName和label
+        	if(createRelation == true){
+	           	if(Name.text == null || Name.text == "" 
+	           	|| Label.text == null || Label.text == ""){
+	           		Alert.show("请输入本体信息","提示");
+	           		return;
+	           	}
+	           	if(Name.text.indexOf(" ") >= 0){
+	           		Alert.show("本体名不能含有空格","提示");
+	           		return;
+	           	}
+	         }
+           	if(objectVisible == true){
+           		if(parentUri == "null"){
+           			Alert.show("请选择谓语","提示");
+           			return;
+           		}
+           		if(objUri == "null"){
+           			Alert.show("请选择宾语类","提示");
+           			return;
+           		}
+           	}           	
+         	dispatchEvent(new Event("ok_click"));
+        }
+        [Bindable]
+        public var propertyVisible:Boolean = false;
+        [Bindable]
+        public var objectVisible:Boolean = false;
+        [Bindable]
+        private var _createRelation:Boolean = true;
+        [Bindable]
+		public function set createRelation(c:Boolean):void{
+			_createRelation=c;
+			if(c) property.label = "parent";
+			else  property.label = "property";
+		}
+		public function get createRelation():Boolean{
+			return _createRelation;
+		}
+                
+        /**************choose parent***************/
+        [Bindable]
+        private var relationChooser:RelationChooser = new RelationChooser();
+		[Bindable]
+		public var parentUri:String = "null";
+		private function chooseParent():void {
+			relationChooser = RelationChooser(PopUpManager.createPopUp( this, RelationChooser , true));
+			relationChooser.addRelation = !createRelation;
+			PopUpManager.centerPopUp(relationChooser);
+			relationChooser.addEventListener("ok_click",setParent);
+		}
+		private function setParent(event:Event):void {
+			parentProperty.text = relationChooser.preLabel;
+			parentUri = relationChooser.uri;
+			if(!createRelation){
+				if(relationChooser.objUri != null && relationChooser.objUri != ""){
+					objClass.text = relationChooser.objLabel;
+					objUri = relationChooser.objUri;
+					findObj.enabled = false;
+				}
+				else
+					findObj.enabled = true;
+			}
+			PopUpManager.removePopUp(relationChooser);
+		}
+        
+        /**************choose object***************/
+        [Bindable]
+        private var classChooser:ClassChooser = new ClassChooser();
+		[Bindable]
+		public var objUri:String = "null";
+		private function chooseClass():void {
+			classChooser = ClassChooser(PopUpManager.createPopUp( this, ClassChooser , true));
+			PopUpManager.centerPopUp(classChooser);
+			classChooser.addEventListener("ok_click",setObject);
+		}
+		private function setObject(event:Event):void {
+			objClass.text = classChooser.objLabel;
+			objUri = classChooser.objUri;
+			PopUpManager.removePopUp(classChooser);
+		}
+    ]]>
+    </mx:Script>
+    <mx:Form width="100%" height="100%">
+		<mx:FormHeading label="填入信息"/>
+		<mx:FormItem label="localName" visible="{createRelation}">
+			<mx:TextInput id="Name" width="180"/>
+		</mx:FormItem>
+		<mx:FormItem label="label" visible="{createRelation}">
+			<mx:TextInput id="Label" width="180"/>
+		</mx:FormItem>
+		<mx:FormItem id="property" label="parent" visible="{propertyVisible}">
+			<mx:HBox>
+				<mx:TextInput id="parentProperty" editable="false" width="120"/>
+				<mx:Button label="find" click="chooseParent()"/>
+			</mx:HBox>
+		</mx:FormItem>
+		<mx:FormItem label="object" visible="{objectVisible}">
+			<mx:HBox>
+				<mx:TextInput id="objClass" editable="false" width="120"/>
+				<mx:Button id="findObj" label="find" click="chooseClass()"/>
+			</mx:HBox>
+		</mx:FormItem>
+	</mx:Form>
+	<mx:HBox>
+		<mx:Button label="OK" click="returnName();"/>
+		<mx:Button label="Cancel" click="PopUpManager.removePopUp(this);"/>
+	</mx:HBox>
+</mx:TitleWindow>

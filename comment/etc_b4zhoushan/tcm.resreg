@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<resregister>
+  <dbResInfo>
+    <dbResQname>
+      <namespace>http://ccnt.cn/tcm</namespace>
+      <localpart>mt</localpart>
+      <label>中医药学语言系统</label>
+    </dbResQname>
+    <localDbResType dbType="Oracle" canBeTempDb="true">
+      <jdbcUrl>jdbc:oracle:thin:@10.214.33.111:1521:TCM</jdbcUrl>
+      <jdbcDriver>oracle.jdbc.driver.OracleDriver</jdbcDriver>
+      <jdbcUser>mt</jdbcUser>
+      <jdbcPwd>mt</jdbcPwd>
+    </localDbResType>
+    <tableNameFilter>
+      <regex>MT\.(.*)</regex>
+      <exclude>(.*)BIN[$](.*)</exclude>
+      <exclude>(.*)JENA[_](.*)</exclude>
+    </tableNameFilter>
+  </dbResInfo>
+  <dbResInfo>
+    <dbResQname>
+      <namespace>http://ccnt.cn/tcm</namespace>
+      <localpart>tcmct</localpart>
+      <label>中医临床术语集</label>
+    </dbResQname>
+    <localDbResType dbType="Oracle" canBeTempDb="true">
+      <jdbcUrl>jdbc:oracle:thin:@10.214.33.111:1521:MT</jdbcUrl>
+      <jdbcDriver>oracle.jdbc.driver.OracleDriver</jdbcDriver>
+      <jdbcUser>tcmct</jdbcUser>
+      <jdbcPwd>tcmct</jdbcPwd>
+    </localDbResType>
+    <tableNameFilter>
+      <regex>TCMCT\.(.*)</regex>
+      <exclude>(.*)BIN[$](.*)</exclude>
+    </tableNameFilter>
+  </dbResInfo>
+  <dbResInfo>
+    <dbResQname>
+      <namespace>http://ccnt.cn/tcm</namespace>
+      <localpart>ztc</localpart>
+      <label>中医药学主题词表</label>
+    </dbResQname>
+    <localDbResType dbType="Oracle" canBeTempDb="true">
+      <jdbcUrl>jdbc:oracle:thin:@10.214.33.111:1521:MT</jdbcUrl>
+      <jdbcDriver>oracle.jdbc.driver.OracleDriver</jdbcDriver>
+      <jdbcUser>ztc</jdbcUser>
+      <jdbcPwd>ztc</jdbcPwd>
+    </localDbResType>
+    <tableNameFilter>
+      <regex>ZTC\.(.*)</regex>
+      <exclude>(.*)BIN[$](.*)</exclude>
+    </tableNameFilter>
+  </dbResInfo>
+  <dbResInfo>
+    <dbResQname>
+      <namespace>http://ccnt.cn/tcm</namespace>
+      <localpart>pharmic</localpart>
+      <label>中医药学名词</label>
+    </dbResQname>
+    <localDbResType dbType="Oracle" canBeTempDb="true">
+      <jdbcUrl>jdbc:oracle:thin:@10.214.33.111:1521:MT</jdbcUrl>
+      <jdbcDriver>oracle.jdbc.driver.OracleDriver</jdbcDriver>
+      <jdbcUser>pharmic</jdbcUser>
+      <jdbcPwd>pharmic</jdbcPwd>
+    </localDbResType>
+    <tableNameFilter>
+      <regex>PHARMIC\.(.*)</regex>
+      <exclude>(.*)BIN[$](.*)</exclude>
+    </tableNameFilter>
+  </dbResInfo>
+  <dbResInfo>
+    <dbResQname>
+      <namespace>http://ccnt.cn/tcm</namespace>
+      <localpart>tcm</localpart>
+      <label>中医药专题数据库</label>
+    </dbResQname>
+    <localDbResType dbType="Oracle" canBeTempDb="true">
+      <jdbcUrl>jdbc:oracle:thin:@10.214.33.111:1521:TCM</jdbcUrl>
+      <jdbcDriver>oracle.jdbc.driver.OracleDriver</jdbcDriver>
+      <jdbcUser>tcm</jdbcUser>
+      <jdbcPwd>tcm</jdbcPwd>
+    </localDbResType>
+    <tableNameFilter>
+      <regex>TCM\.(.*)</regex>
+      <exclude>(.*)[$](.*)</exclude>
+    </tableNameFilter>
+  </dbResInfo>
+</resregister>

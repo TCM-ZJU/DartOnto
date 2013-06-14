@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" width="200" height="120"
+	borderStyle="solid" borderColor="#FFFFFF" dropShadowColor="#ABCDEF" creationComplete="init()"
+	rollOver="rollOverHandler(event)" rollOut="rollOutHandler(event)"
+	horizontalScrollPolicy="off" verticalScrollPolicy="off">
+	<mx:Script>
+	<![CDATA[
+		import mx.collections.XMLListCollection;
+		import mx.collections.ArrayCollection;
+		import mx.utils.ArrayUtil;
+		import mx.rpc.events.ResultEvent;
+		import mx.controls.Alert;
+		import dart.mapping.TableThumbEvent;
+		import dart.mapping.PropThumbEvent;
+		import dart.mapping.JoinEvent;
+		
+		/********************init**********************/
+		[Bindable]
+	    public var proName:String;
+	    [Bindable]
+	    private var isProp:Boolean;
+	    [Embed(source="../assets/ontology/relation.png")] public var relaIcn:Class;
+	    [Embed(source="../assets/ontology/property.png")] public var propIcn:Class;
+	    override public function set data(value:Object):void {
+	    	if(super.data == value)
+	    		return;
+			super.data = value;
+			if (data != null) {
+		    	var xml:XML = data as XML;
+		    	
+		    	var uri:String = xml.ontologyURI;
+	    		proName = xml.ontologyURI.@label;//uri.substring(uri.lastIndexOf("#")+1);
+
+		    	isProp = (xml.children().length() <3);
+		    	if(inited)
+		    		init();
+		 	}
+	    }
+	    private function init():void{
+	    	//Alert.show(data as XML,'init');
+	    	if(isProp){
+	    		image.source = propIcn;
+	    		columnCB.selectedItem = data.column[0];
+	    	}
+	    	else {
+	    		image.source = relaIcn;
+	    		var i:int = 0;
+	    		
+	    		tableCB.selectedIndex = -1;
+	    		var tableURI:String = data.table[0];
+	    		var tableData:XMLListCollection = this.parentDocument.parentDocument.parentDocument.parentDocument.tableData;//SemregFile
+	    		for(i=0; i<tableData.length; i++){
+	    			var tableItem:Object = tableData.getItemAt(i);
+	    			if(tableItem.uri == tableURI){
+	    				tableCB.selectedIndex = i;
+	    				break;
+	    			}
+	    		}
+	    		
+	    		
+	    		joinCB.selectedIndex = -1;
+	    		var joinref:String = data.joinref[0];   		
+	    		var joinData:XMLListCollection = this.parentDocument.parentDocument.parentDocument.parentDocument.joinData;//SemregFile
+	    		for(i=0; i<joinData.length; i++){
+	    			var joinItem:Object = joinData.getItemAt(i);
+	    			if(joinItem.@id == joinref){
+	    				joinCB.selectedIndex = i;
+	    				break;
+	    			}
+	    		}
+		    }
+		    inited = true;
+	    }
+	    private var inited:Boolean = false;
+	    /****************combo box********************/
+	    private var str:String;
+		public function changeData(type:String=""):void {
+			if(type=='column')
+				data.column[0] = columnCB.selectedItem;
+			else if(type=='table')
+				data.table[0] = tableCB.selectedItem.uri.toString();
+			else if(type=='join')
+				data.joinref[0] = joinCB.selectedItem.@id.toString();
+			this.parentDocument.dispatchEvent(new PropThumbEvent(PropThumbEvent.UPDATE, new XML(data)));
+		}
+		/****************edit join ********************/
+		import mx.managers.PopUpManager;
+		import mapping.joinTable.JoinrefDialog;
+		private var joinref:JoinrefDialog;
+		public function editJoinref():void {
+			if(tableCB.selectedIndex < 0){
+				Alert.show("请选择宾语表","提示");
+				return;
+			}
+			if(joinCB.selectedIndex < 0){
+				joinref = JoinrefDialog(PopUpManager.createPopUp( this, JoinrefDialog , true));
+				joinref.action = 'new';
+			} else {
+				var join:XML = joinCB.selectedItem as XML;
+				if(join.attribute('editable').toString() == "false"){
+					Alert.show("特殊连接，无法编辑，请在脚本界面修改","屏蔽");
+					return;
+				}else{
+					joinref = JoinrefDialog(PopUpManager.createPopUp( this, JoinrefDialog , true));
+					joinref.action = 'edit';					
+					joinref.join = join;
+				}
+			}
+			joinref.tableEditor = this.parentDocument.parentDocument.parentDocument;
+			joinref.subjectTableUri = this.parentDocument.parentDocument.parentDocument.tableURI;//TableEditor
+			joinref.objectTableUri = data.table[0];
+			PopUpManager.centerPopUp(joinref);
+			joinref.addEventListener("ok_click",insertRelation);
+		}
+		private function insertRelation(event:Event):void {
+			PopUpManager.removePopUp(joinref);
+			//Alert.show(joinref.join.toString(), "action:"+joinref.action);//
+			if(joinref.action == 'new'){
+				this.parentDocument.dispatchEvent(new JoinEvent(JoinEvent.ADD, joinref.join));
+				data.joinref[0] = joinref.joinid.text;
+			}
+			else
+				this.parentDocument.dispatchEvent(new JoinEvent(JoinEvent.EDIT, joinref.join));
+			changeData();
+		}
+		/************ roll *************/
+		private function rollOverHandler(event:MouseEvent):void
+		{
+            setStyle("borderColor", "#CCCCCC");
+            setStyle("dropShadowEnabled", true);
+            buttons.visible = true;
+        }
+
+        private function rollOutHandler(event:MouseEvent):void
+		{
+            setStyle("borderColor", "#FFFFFF");
+            setStyle("dropShadowEnabled", false);
+			buttons.visible = false;
+        }
+        /****************Label Function*****************/
+        public function tableName(item:Object):String {	    	
+	    	var uri:String = item.uri;
+	    	return uri.substr(uri.lastIndexOf(".")+1);
+	    }
+	]]>
+	</mx:Script>
+	<mx:VBox paddingLeft="15" paddingTop="15" height="100%" width="100%">
+		<mx:HBox paddingBottom="5" width="100%">
+			<mx:Image id="image" source="@Embed(source='../assets/ontology/property.png')" />
+			<mx:Label text="{proName}" textAlign="left" fontWeight="bold" width="100%"/>
+		</mx:HBox>
+		<mx:Canvas width="100%" height="100%">
+			<mx:Text width="100%" height="100%"/>
+			<mx:ComboBox id="columnCB" width="130" height="28" visible="{isProp}" 
+				dataProvider="{this.parentDocument.parentDocument.parentDocument.columnList}" change="changeData('column')"/>
+			<mx:VBox id="tableVB" visible="{!isProp}">
+				<mx:ComboBox id="joinCB" width="130" height="28" change="changeData('join')" labelField="@id" 
+					dataProvider="{this.parentDocument.parentDocument.parentDocument.parentDocument.joinData}"/>
+					<!--this.parentDocument.parentDocument.parentDocument.parentDocument//SemregFile-->
+				<mx:ComboBox id="tableCB" width="130" height="28" change="changeData('table')" labelFunction="tableName"
+					dataProvider="{this.parentDocument.parentDocument.parentDocument.parentDocument.tableData}"	/>
+			</mx:VBox>
+		</mx:Canvas>		
+	</mx:VBox>
+	<mx:VBox id="buttons" visible="false" verticalGap="4" paddingRight="8" right="8" bottom="12">
+        <mx:Button id="Edit" icon="@Embed('../assets/record/record_edit.gif')" visible="{!isProp}"
+            click="editJoinref();" 
+            width="30" toolTip="Edit Join Reference"/>
+        <mx:Button id="Delete" icon="@Embed('../assets/record/record_delete.gif')" 
+        	click="this.parentDocument.dispatchEvent(new PropThumbEvent(PropThumbEvent.DELETE, new XML(data)))" 
+            width="30" toolTip="Delete the Property form ontology script"/>
+    </mx:VBox>
+</mx:Canvas>

@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" width="200" height="300" xmlns:view="mapping.view.*"
+	creationComplete="init()">
+	<mx:Script>
+	<![CDATA[
+		import mx.controls.Image;
+		import mx.collections.ArrayCollection;
+		import mx.utils.ArrayUtil;
+		import mx.controls.Alert;
+		import mapping.TableEditor;
+		        
+		override public function set data(value:Object):void {			
+			super.data = value;
+			if (data != null) {
+				var str:String = data.uri;
+	    		tableName = str.substring(str.lastIndexOf("}")+1);
+	    		if(inited)
+	    			init();		
+			}
+		}
+		private var inited:Boolean = false;
+		private function init():void{
+			columns=this.parentDocument.parentDocument.getColumnList(data.uri);//TableEditor
+			inited = true;
+		}
+		public function check(columnLabel:String,selected:Boolean):void{
+			if(selected) {
+				var newColumn:XML = XML("<column>"+columnLabel+"</column>");
+				data.columns[0].appendChild(newColumn);
+			} else {
+				var children:XMLList = (data as XML).columns.column;
+				for(var i:int=0; i<children.length(); i++){
+					if(children[i].text() == columnLabel)
+						delete children[i];
+				}
+			}
+			this.parentDocument.update();
+		}
+		public function setAlias(columnLabel:String,aliasName:String):void{
+			var children:XMLList = (data as XML).columns.column;
+			for(var i:int=0; i<children.length(); i++){
+				if(children[i].text() == columnLabel){
+					if(aliasName == "")
+						delete children[i].@aliasName;
+					else
+						children[i].@aliasName = aliasName;					
+				}
+			}
+			this.parentDocument.update();
+		}
+		public function setID():void{
+			(data as XML).@id = tableID.text;
+			this.parentDocument.update();
+		}
+		[Bindable]
+		private var tableName:String;
+		[Bindable]
+		private var columns:ArrayCollection;
+	]]>
+	</mx:Script>
+	<mx:VBox paddingLeft="15" paddingTop="15" height="100%" width="100%">
+		<mx:HBox id="imageBox" paddingBottom="5" width="100%">
+			<mx:Image id="image" source="@Embed('../../assets/table/table.gif')"/>
+			<mx:TextInput id="tableID" text="{data.@id}" textAlign="left" fontWeight="bold" width="100%" 
+				toolTip="回车修改表ID" enter="setID()"/>
+			<!--mx:Label text="{data.@id}" textAlign="left" fontWeight="bold" width="100%"/-->
+			<mx:Button id="Delete" icon="@Embed('../../assets/table/table_delete.gif')" 
+        	click="this.parentDocument.deleteTable(new XML(data));" 
+            width="30" toolTip="Delete the table form table list of view"/>
+		</mx:HBox>
+		<mx:Label text="{tableName}"/>
+		<mx:List id="columnList" dataProvider="{columns}" width="100%" height="100%">
+			<mx:itemRenderer>
+				<mx:Component>
+					<view:ViewColumn/>
+				</mx:Component>
+			</mx:itemRenderer>
+		</mx:List>
+	</mx:VBox>
+</mx:Canvas>

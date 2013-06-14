@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" layout="vertical" width="300" height="400" creationComplete="getSemregListService.send()">
+	<mx:Script>
+	<![CDATA[
+		import mx.controls.Alert;
+		import mx.rpc.events.ResultEvent;
+		import mx.managers.PopUpManager;
+   		
+   		[Bindable]
+   		[Embed(source="../assets/file/page.gif")] public var fileIcon:Class;
+   		private function iconFun(item:Object):*{return fileIcon;}
+   		[Bindable]
+		private var filesFeed:XML;
+		public var filename:String;
+		private function returnObj():void {
+           	if(filename == null){
+           		Alert.show("请选择要打开的文件","提示");
+           		return;
+           	}
+         	dispatchEvent(new Event("ok_click"));
+        }
+    ]]>
+    </mx:Script>
+	<mx:List id="files" height="100%" width="100%" change="filename=List(event.target).selectedItem.toString()" 
+		dataProvider="{filesFeed.file}" iconFunction="iconFun"/>
+	<mx:HBox>
+		<mx:Button label="OK" click="returnObj();"/>
+		<mx:Button label="Cancel" click="PopUpManager.removePopUp(this);"/>
+	</mx:HBox>
+	<mx:HTTPService id="getSemregListService" url="./getSemregList" resultFormat="e4x" result="filesFeed=event.result as XML;" />
+</mx:TitleWindow>

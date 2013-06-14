@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<tableregister>
+  <table>
+    <uri>{http://ccnt.cn/tcm}tcm.GB_ZLSYJB</uri>
+    <ontologies>
+      <ontology isMainOnto="true" uritype="1" uricol="ID">
+        <ontologyURI label="中医疾病">http://cintcm.ac.cn/onto#TCMDisease</ontologyURI>
+        <ontoProps>
+          <ontoProp>
+            <ontologyURI label="异名">http://www.w3.org/2004/02/skos/core#altLabel</ontologyURI>
+            <column>TONGYC</column>
+          </ontoProp>
+          <ontoProp>
+            <ontologyURI label="注释">http://cintcm.ac.cn/onto#comment</ontologyURI>
+            <column>ZHUS</column>
+          </ontoProp>
+          <ontoProp>
+            <ontologyURI label="概念词">http://www.w3.org/2004/02/skos/core#prefLabel</ontologyURI>
+            <column>JIBMC</column>
+          </ontoProp>
+        </ontoProps>
+      </ontology>
+    </ontologies>
+  </table>
+  <table>
+    <uri>{http://ccnt.cn/tcm}tcm.GB_ZLSYZH</uri>
+    <ontologies>
+      <ontology isMainOnto="true" uritype="1" uricol="ID">
+        <ontologyURI label="证候">http://cintcm.ac.cn/onto#Syndrome</ontologyURI>
+        <ontoProps>
+          <ontoProp>
+            <ontologyURI label="概念词">http://www.w3.org/2004/02/skos/core#prefLabel</ontologyURI>
+            <column>ZHENGHMC</column>
+          </ontoProp>
+          <ontoProp>
+            <ontologyURI label="异名">http://www.w3.org/2004/02/skos/core#altLabel</ontologyURI>
+            <column>TONGYC</column>
+          </ontoProp>
+          <ontoProp>
+            <ontologyURI label="注释">http://cintcm.ac.cn/onto#comment</ontologyURI>
+            <column>ZHUS</column>
+          </ontoProp>
+        </ontoProps>
+      </ontology>
+    </ontologies>
+  </table>
+  <table>
+    <uri>{http://ccnt.cn/tcm}tcm.GB_ZLSY</uri>
+    <ontologies>
+      <ontology isMainOnto="true" uritype="1" uricol="ID">
+        <ontologyURI label="治法">http://cintcm.ac.cn/onto#therapeuticmethod</ontologyURI>
+        <ontoProps>
+          <ontoProp>
+            <ontologyURI label="概念词">http://www.w3.org/2004/02/skos/core#prefLabel</ontologyURI>
+            <column>ZHIFMC</column>
+          </ontoProp>
+          <ontoProp>
+            <ontologyURI label="异名">http://www.w3.org/2004/02/skos/core#altLabel</ontologyURI>
+            <column>TONGYC</column>
+          </ontoProp>
+          <ontoProp>
+            <ontologyURI label="注释">http://cintcm.ac.cn/onto#Comment</ontologyURI>
+            <column>ZHUS</column>
+          </ontoProp>
+        </ontoProps>
+      </ontology>
+    </ontologies>
+  </table>
+</tableregister>

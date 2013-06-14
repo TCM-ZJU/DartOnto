@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:ComboBox dataProvider="{columnList}" width="130" height="28" xmlns:mx="http://www.adobe.com/2006/mxml">
+	<mx:Script>
+    <![CDATA[
+    	import mapping.TableEditor;
+    	import mx.collections.ArrayCollection;
+		import mx.controls.Alert;
+		[Bindable]
+		private var columnList:ArrayCollection;
+		
+		private var _column:String;
+		[Bindable]
+		public function set column(c:String):void {
+			_column = c;
+			this.selectedItem = _column;
+		}
+		public function get column():String {
+			return _column;
+		}
+		
+		private var _tableUri:String;
+		[Bindable]
+		public function set tableUri(c:String):void {
+			_tableUri = c;
+			var tableEditor:TableEditor = this.parentDocument.tableEditor;
+			columnList = tableEditor.getColumnList(_tableUri);
+			this.selectedIndex = -1;
+		}
+		public function get tableUri():String {
+			return _tableUri;
+		}		
+    ]]>
+    </mx:Script>
+</mx:ComboBox>

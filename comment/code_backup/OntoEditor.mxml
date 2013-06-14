@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:local="*"
+	 fontSize='12' fontFamily="Verdana,宋体" layout="horizontal" xmlns:ontology="ontology.*" xmlns:mapping="mapping.*">
+	<mx:TabNavigator width="100%" height="100%">
+		<ontology:OntoPanel/>
+		<mapping:MappingPanel id="mapping"/>
+	</mx:TabNavigator>
+</mx:Application>

@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Panel xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%" xmlns:local="*" 
+	title="类型编辑器" titleIcon="@Embed(source='../assets/ontology/class.png')">
+	<mx:Script>
+	<![CDATA[
+		import dart.MyListEvent;
+		import mx.collections.XMLListCollection;
+		import mx.events.ListEvent;
+		import mx.controls.Alert;
+		import mx.rpc.events.ResultEvent;
+		import mx.managers.PopUpManager;
+		import mx.events.CloseEvent;
+        
+        [Bindable]
+        private var objectFeed:XML;
+        private var nameSpace:String;
+        public function getDetail(c:XML):void {
+        	classLabel.text = c.attribute("label");
+        	var uri:String = c.attribute("uri");
+        	classURI.text = uri;
+        	nameSpace = uri.substr(0,uri.lastIndexOf("#")+1);
+        	getObjectService.send();
+            deletePropertyButton.enabled = false;
+            deleteRelationButton.enabled = false;
+            destroyRelationButton.enabled = false;
+            modelRO.addEventListener(ResultEvent.RESULT,objectServiceResultHandler);
+        }
+   		
+   		private var refreshTree:Boolean = false;
+   		private var refreshObject:Boolean = false;
+        private function updateDetail(uri:String, label:String, objectUri:String=null, objectLabel:String = ""):void {
+        	dialog = NameDialog(PopUpManager.createPopUp( this, NameDialog , true));
+        	dialog.parentUri = uri;
+        	dialog.Name.text = uri.substring(uri.indexOf("#")+1);
+        	dialog.Label.text = label;
+        	if(objectUri != null){
+        		dialog.objectVisible = true;
+        		dialog.objUri = objectUri;
+        		dialog.objClass.text = objectLabel;
+        	}
+			PopUpManager.centerPopUp(dialog);
+			dialog.addEventListener("ok_click",confirmUpdate);
+        }
+		private function confirmUpdate(event:Event):void{
+			PopUpManager.removePopUp(dialog);
+			if(dialog.parentUri == classURI.text)
+				refreshTree = true;
+			else
+				refreshObject = true;
+        	modelRO.updateDetail(dialog.parentUri, dialog.Name.text, dialog.Label.text, dialog.objUri);
+		}
+		
+   		private function objectServiceResultHandler(event:ResultEvent):void {
+			if(refreshTree){
+        		objectFeed = null;
+        		this.parentDocument.loadXML();
+        		refreshTree = false;
+      		}
+        	else if(refreshObject){
+        		getObjectService.send();
+        		refreshObject = false;
+        	} else {
+        		objectFeed = event.result as XML;
+	   			if(objectFeed == null)
+	   				objectFeed = XML(event.result);	
+	            createPropertyButton.enabled = true;
+	            createRelationButton.enabled = true;
+	            insertRelationButton.enabled = true;
+        	}
+        }
+
+		[Bindable]
+        private var dialog:NameDialog = new NameDialog();
+		private function addRelation(showObject:Boolean, createRelation:Boolean=true):void {
+        	//TODO 检查重名，包括localName和label
+			dialog = NameDialog(PopUpManager.createPopUp(this, NameDialog , true));
+			dialog.propertyVisible = showObject;
+			dialog.objectVisible = showObject;
+			dialog.createRelation = createRelation;
+			PopUpManager.centerPopUp(dialog);
+			dialog.addEventListener("ok_click",insertRelation);
+		}
+		private function insertRelation(event:Event):void {
+			PopUpManager.removePopUp(dialog);
+			if(dialog.createRelation)
+        		modelRO.createRelation(classURI.text, dialog.Name.text, dialog.Label.text, dialog.objUri, dialog.parentUri);
+        	else
+        		modelRO.addRelation(classURI.text, dialog.parentUri, dialog.objUri);
+		}
+		[Bindable]
+        private var selectedItem:Object;
+		private function deleteRelation(item:Object, isProperty:Boolean=true, isDestroy:Boolean=false):void {
+            deletePropertyButton.enabled = false;
+            deleteRelationButton.enabled = false;
+            destroyRelationButton.enabled = false;
+            if(isDestroy)
+            	Alert.show("确定删除关系\""+item.@property+"\"?", "删除关系", 3, this, destroyRelationHandler);
+			else if(isProperty)
+				Alert.show("确定移除属性\""+selectedItem.@label+"\"?", "移除属性", 3, this, deletePropertyHandler);
+			else
+				Alert.show("确定移除关系\""+item.@property+"\"?", "移除关系", 3, this, deleteRelationHandler);
+		}
+		private function deletePropertyHandler(event:CloseEvent):void {
+           	if (event.detail==Alert.YES)
+           		modelRO.deleteRelation(classURI.text, selectedItem.@uri[0]);
+        }
+		private function deleteRelationHandler(event:CloseEvent):void {
+           	if (event.detail==Alert.YES)           		
+           		modelRO.deleteRelation(classURI.text, relationGrid.selectedItem.@propertyUri[0]);
+        }        
+		private function destroyRelationHandler(event:CloseEvent):void {
+           	if (event.detail==Alert.YES)           		
+           		modelRO.destroyRelation(classURI.text, relationGrid.selectedItem.@propertyUri[0]);
+        }
+        
+    ]]>
+    </mx:Script>
+    <mx:HBox paddingBottom="15" paddingLeft="15" paddingRight="15" paddingTop="15">
+    	<mx:Text><mx:htmlText><![CDATA[<b>类型：</b>]]></mx:htmlText></mx:Text>
+    	<mx:Label id="classLabel" text="{objectFeed.attribute('label')}"/>
+    	<mx:Text><mx:htmlText><![CDATA[<b>  URI:</b>]]></mx:htmlText></mx:Text>
+    	<mx:Label id="classURI" text="{objectFeed.@uri}"/>
+    	<mx:Spacer width="100%"/>
+    	<mx:Button label="修改" click="updateDetail(classURI.text,classLabel.text)"/>
+    </mx:HBox>
+    <mx:HDividedBox width="100%" height="100%">
+		<mx:Panel title="属性列表" width="40%" height="100%" titleIcon="@Embed(source='../assets/ontology/property.png')">
+			<mx:List id="propertyList" width="100%" dataProvider="{objectFeed.property}" labelField="@label"
+				change="this.selectedItem=List(event.target).selectedItem;deletePropertyButton.enabled=true;"
+				doubleClickEnabled="true" 
+				doubleClick="var item:XML=propertyList.selectedItem as XML; updateDetail(item.@uri,item.@label)"
+				height="100%" paddingBottom="15" paddingLeft="15" paddingRight="15" paddingTop="15"></mx:List>
+			<mx:ControlBar>
+				<mx:Button label="新建" enabled="false" id="createPropertyButton" click="addRelation(false)"/>
+				<mx:Button label="删除" enabled="false" id="deletePropertyButton" click="deleteRelation(propertyList.selectedItem)"/>
+			</mx:ControlBar>
+		</mx:Panel>
+		<mx:Panel title="关系列表" width="60%" height="100%" titleIcon="@Embed(source='../assets/ontology/relation.png')">
+			<mx:DataGrid id="relationGrid" dataProvider="{objectFeed.relation}" 
+				change="deleteRelationButton.enabled=true; destroyRelationButton.enabled=true" 
+				doubleClickEnabled="true"
+				doubleClick="var item:XML=relationGrid.selectedItem as XML; updateDetail(item.@propertyUri,item.@property,item.@objectUri,item.@object)"
+				width="100%" height="100%" paddingBottom="15" paddingLeft="15" paddingRight="15" paddingTop="15">
+				<mx:columns>
+					<mx:DataGridColumn dataField="@property" headerText="关系名称"/>
+					<mx:DataGridColumn dataField="@object" headerText="宾语类型"/>
+				</mx:columns>
+			</mx:DataGrid>
+			<mx:ControlBar>
+				<mx:Button label="新建" enabled="false" id="createRelationButton" click="addRelation(true)" icon="@Embed(source='../assets/ontology/relation_create.png')"/>
+				<mx:Button label="添加" enabled="false" id="insertRelationButton" click="addRelation(true,false)" icon="@Embed(source='../assets/ontology/relation_add.png')"/>				
+				<mx:Button label="移除" enabled="false" id="deleteRelationButton" click="deleteRelation(relationGrid.selectedItem,false)" icon="@Embed(source='../assets/ontology/relation_delete.png')"/>
+				<mx:Button label="删除" enabled="false" id="destroyRelationButton" click="deleteRelation(relationGrid.selectedItem,false,true)" icon="@Embed(source='../assets/ontology/relation_destroy.png')"/>
+			</mx:ControlBar>
+		</mx:Panel>
+	</mx:HDividedBox>
+	<mx:HTTPService id="getObjectService" url="./getClassObject" resultFormat="e4x" result="objectServiceResultHandler(event)">
+		<mx:request xmlns="">
+            <uri>{classURI.text}</uri>
+        </mx:request>
+	</mx:HTTPService>
+	<mx:RemoteObject id="modelRO" destination="modelController" showBusyCursor="true"/>
+</mx:Panel>

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%" creationComplete="getTreeService.send()" 
+	label="本体概要" icon="@Embed(source='../assets/ontology/class.png')">
+	<mx:Script>
+	<![CDATA[
+		import mx.controls.Alert;
+		import mx.rpc.events.ResultEvent;
+        
+        [Embed(source="../assets/ontology/class.png")] public var classIcn:Class;
+        [Embed(source="../assets/ontology/property.png")] public var propertyIcn:Class;
+        [Embed(source="../assets/ontology/relation.png")] public var relationIcn:Class;
+   		private function iconFun(item:Object):*{
+   			var node:XML = XML(item);
+   			if(node.localName() == "type")
+   				return classIcn;
+   			else if(node.localName() == "property")
+   				return propertyIcn;
+   			else
+   				return relationIcn;
+   		}
+   		
+   		[Bindable]
+   		private var tableFeed:XML;   		
+   		private function classTreeHandler(event:ResultEvent):void {
+   			tableFeed = event.result as XML;
+   		}
+   		private function treeLabel(item:Object):String {
+   			var node:XML = XML(item);
+   			if( node.localName() == "relation" )
+   				return node.@property;
+   			else
+   				return node.@label;
+   		}
+
+    ]]>
+    </mx:Script>
+	<mx:Tree id="ontoTree" dataProvider="{tableFeed}" labelFunction="treeLabel" iconFunction="iconFun"
+		width="100%" height="100%" dragEnabled="true"/>
+	<mx:HTTPService id="getTreeService" url="./getClassTree?withProperty=true" resultFormat="e4x" result="classTreeHandler(event)"/>
+</mx:VBox>

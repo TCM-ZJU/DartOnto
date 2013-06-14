@@ -1,0 +1,120 @@
+<?xml version="1.0"?>
+
+<project name="OntoTool" default="tomcatdeploy" basedir="./">
+	<property file="build.properties"/>
+	<property name="name" value="onto_tool"/>
+	<property name="src.dir" value="${basedir}/webapps/OntoTool"/>
+	<property name="backup.dir" value="c:/OntoTool_backup"/>
+	
+	<target name="deploy" depends="clean">
+		<copy todir="${deploy.path}">
+			<fileset dir="${src.dir}">
+				<include name="**/*" />
+				<exclude name="WEB-INF/**"/>
+			</fileset>
+		</copy>
+	</target>
+	
+	<target name="clean">
+		<delete>
+			<fileset dir="${deploy.path}" includes="**/*" excludes="WEB-INF/**"/>
+		</delete>
+	</target>
+	
+	<target name="tomcatdeploy" depends="tomcatclean">
+		<copy todir="${src.dir}/WEB-INF/lib">
+			<fileset dir="${basedir}/flex_libs">
+				<include name="**/*" />
+			</fileset>
+		</copy>
+		<copy todir="${deploy.path}">
+			<fileset dir="${src.dir}">
+				<include name="**/*" />
+			</fileset>
+		</copy>
+	</target>
+	
+	<target name="tomcatclean">
+		<delete>
+			<fileset dir="${deploy.path}" includes="**/*"/>
+		</delete>
+		<delete>
+			<fileset dir="${appserver.home}/logs" includes="**/*" excludes="mt_log_"/>
+		</delete>
+	</target>
+	
+	<target name="refresh">
+		<delete>
+			<fileset dir="${deploy.path}" includes="OntoTool.swf"/>
+		</delete>
+		<copy todir="${deploy.path}">
+			<fileset dir="${src.dir}">
+				<include name="OntoTool.swf" />
+			</fileset>
+		</copy>
+	</target>
+	
+	<target name="backup">
+		<delete>
+			<fileset dir="${basedir}/src/etc" includes="**/*"/>
+		</delete>
+		<copy todir="${basedir}/src/etc">
+			<fileset dir="${deploy.path}/WEB-INF/classes/etc">
+				<include name="**/*" />
+			</fileset>
+		</copy>
+		<delete>
+			<fileset dir="${src.dir}/WEB-INF/classes/etc" includes="**/*"/>
+		</delete>
+		<copy todir="${src.dir}/WEB-INF/classes/etc">
+			<fileset dir="${basedir}/src/etc">
+				<include name="**/*" />
+			</fileset>
+		</copy>
+	</target>
+	
+	<target name="war">
+		<delete>
+			<fileset dir="${deploy.path}/WEB-INF/classes/etc" includes="**/*"/>
+		</delete>
+		<copy todir="${deploy.path}/WEB-INF/classes">
+			<fileset dir="${basedir}/beijing">
+				<include name="**/*" />
+			</fileset>
+		</copy>
+		<copy tofile="${deploy.path}/WEB-INF/classes/log4j.properties" file="${src.dir}/log4j2.properties"/>
+		<war warfile="${basedir}/mt.war" webxml="${deploy.path}/WEB-INF/web.xml">
+			<lib dir="${deploy.path}/WEB-INF/lib"/>
+			<classes dir = "${deploy.path}/WEB-INF/classes"/>
+			<fileset dir="${deploy.path}">
+			</fileset>
+		</war>
+	</target>
+
+	<target name="tomcat-shutdown">
+		<exec dir="${appserver.home}/bin" executable="cmd">
+			<env key="CATALINA_HOME" path="${appserver.home}"/>
+			<arg value="/C shutdown.bat"/>
+		</exec>
+	</target>
+
+	<target name="tomcat-start" depends="deploy">
+		<exec dir="${appserver.home}/bin" executable="cmd">
+			<env key="CATALINA_HOME" path="${appserver.home}"/>
+			<arg value="/C startup.bat"/>
+		</exec>
+	</target>
+	
+	<target name="tomcat-backup">
+		<tstamp>
+			<format property="nowstamp" pattern="yyyyMMdd" locale="en"/>
+		</tstamp>
+		<mkdir dir="${backup.dir}/${nowstamp}"/>
+		<copy todir="${backup.dir}/${nowstamp}">
+			<fileset dir="${deploy.path}/WEB-INF/classes/etc">
+				<include name="**/*" />
+			</fileset>
+		</copy>
+	</target>
+
+</project>

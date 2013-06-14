@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Panel xmlns:mx="http://www.adobe.com/2006/mxml" layout="horizontal" width="100%" height="100%" label="本体查询器">	
+	<mx:HBox>
+		<mx:Label text="查询本体类:"/>
+		<mx:TextInput id="searchTerms"/>
+		<mx:Button label="搜索"/>
+	</mx:HBox>	
+</mx:Panel>
